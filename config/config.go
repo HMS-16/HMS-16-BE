@@ -6,7 +6,12 @@ import (
 )
 
 type Config struct {
-	API_PORT string
+	API_PORT    string
+	DB_USERNAME string
+	DB_PASSWORD string
+	DB_NAME     string
+	DB_ADDRESS  string
+	DB_PORT     string
 }
 
 var Cfg *Config
