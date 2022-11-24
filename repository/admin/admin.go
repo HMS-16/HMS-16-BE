@@ -7,7 +7,7 @@ import (
 
 type AdminRepository interface {
 	Create(admin model.Admins) error
-	Login(username, password string) (model.Admins, error)
+	Login(username string) (model.Admins, error)
 	GetById(id string) (model.Admins, error)
 	Update(admin model.Admins) error
 	Delete(id string) error
@@ -31,11 +31,11 @@ func (a *adminRepository) Create(admin model.Admins) error {
 	return nil
 }
 
-func (a *adminRepository) Login(username, password string) (model.Admins, error) {
+func (a *adminRepository) Login(username string) (model.Admins, error) {
 	var admin model.Admins
 
-	query := `SELECT * FROM admins WHERE username = ? AND password = ?`
-	row, err := a.db.Query(query, username, password)
+	query := `SELECT * FROM admins WHERE username = ?`
+	row, err := a.db.Query(query, username)
 	if err != nil {
 		return model.Admins{}, err
 	}

@@ -8,7 +8,7 @@ import (
 
 type AdminUsecase interface {
 	Create(admin model.Admins) error
-	Login(username, password string) (dto.Admin, error)
+	Login(username string) (model.Admins, error)
 	GetById(id string) (dto.Admin, error)
 	Update(admin model.Admins) error
 	Delete(id string) error
@@ -30,12 +30,12 @@ func (a *adminUsecase) Create(admin model.Admins) error {
 	return nil
 }
 
-func (a *adminUsecase) Login(username, password string) (dto.Admin, error) {
-	admin, err := a.admin.Login(username, password)
+func (a *adminUsecase) Login(username string) (model.Admins, error) {
+	admin, err := a.admin.Login(username)
 	if err != nil {
-		return dto.Admin{}, err
+		return model.Admins{}, err
 	}
-	return *admin.ToDTO(), nil
+	return admin, nil
 }
 
 func (a *adminUsecase) GetById(id string) (dto.Admin, error) {

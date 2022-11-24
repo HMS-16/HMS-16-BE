@@ -23,7 +23,11 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminV1.POST("/login", adminCtrl.Login)
 
 	adminV1JWT := adminV1
-	adminV1JWT.Use(mid.JWT([]byte(config.Cfg.JWT_SECRET_KEY)))
+	adminV1JWT.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		ContextKey: "jwt-token",
+	}))
+	adminV1JWT.Use(middleware.AuthorizationAdmin)
 	adminV1JWT.GET("/:id", adminCtrl.GetById)
 	adminV1JWT.PUT("/:id", adminCtrl.Update)
 	adminV1JWT.DELETE("/:id", adminCtrl.Delete)

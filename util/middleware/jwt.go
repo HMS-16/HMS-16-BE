@@ -19,7 +19,7 @@ func CreateToken(username, role string) (string, error) {
 }
 
 func GetJWT(c echo.Context) string {
-	token := c.Get("token").(*jwt.Token)
+	token := c.Get("jwt-token").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 	role := claims["role"].(string)
 	return role

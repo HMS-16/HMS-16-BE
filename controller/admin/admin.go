@@ -39,31 +39,23 @@ func (a *adminController) Create(c echo.Context) error {
 func (a *adminController) Login(c echo.Context) error {
 	var admin model.Admins
 	c.Bind(&admin)
-	admin.Password, _ = hash.HashPassword(admin.Password)
 
-	DTOAdmin, err := a.admin.Login(admin.Username, admin.Password)
-	if err != nil {
+	adminDB, err := a.admin.Login(admin.Username)
+	if err != nil && !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
 	role := "admin"
-	token, _ := middleware.CreateToken(DTOAdmin.Username, role)
+	token, _ := middleware.CreateToken(adminDB.Username, role)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success login",
-		"data":    DTOAdmin,
+		"data":    *adminDB.ToDTO(),
 		"token":   token,
 	})
 }
 
 func (a *adminController) GetById(c echo.Context) error {
-	role := middleware.GetJWT(c)
-	if role == "admin" {
-		c.JSON(http.StatusUnauthorized, echo.Map{
-			"message": "url access for admin",
-		})
-	}
-
 	id := c.Param("id")
 
 	admin, err := a.admin.GetById(id)
@@ -77,13 +69,6 @@ func (a *adminController) GetById(c echo.Context) error {
 }
 
 func (a *adminController) Update(c echo.Context) error {
-	role := middleware.GetJWT(c)
-	if role == "admin" {
-		c.JSON(http.StatusUnauthorized, echo.Map{
-			"message": "url access for admin",
-		})
-	}
-
 	var admin model.Admins
 	c.Bind(&admin)
 	admin.UpdatedAt = time.Now()
@@ -102,13 +87,6 @@ func (a *adminController) Update(c echo.Context) error {
 }
 
 func (a *adminController) Delete(c echo.Context) error {
-	role := middleware.GetJWT(c)
-	if role == "admin" {
-		c.JSON(http.StatusUnauthorized, echo.Map{
-			"message": "url access for admin",
-		})
-	}
-
 	id := c.Param("id")
 
 	err := a.admin.Delete(id)
