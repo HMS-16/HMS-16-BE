@@ -1,4 +1,4 @@
-package usecase
+package admin
 
 import (
 	"HMS-16-BE/dto"
@@ -15,10 +15,10 @@ type AdminUsecase interface {
 }
 
 type adminUsecase struct {
-	admin repository.AdminRepository
+	admin admin.AdminRepository
 }
 
-func NewAdminUsecase(a repository.AdminRepository) *adminUsecase {
+func NewAdminUsecase(a admin.AdminRepository) *adminUsecase {
 	return &adminUsecase{a}
 }
 

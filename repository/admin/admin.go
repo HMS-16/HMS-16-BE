@@ -1,4 +1,4 @@
-package repository
+package admin
 
 import (
 	"HMS-16-BE/model"

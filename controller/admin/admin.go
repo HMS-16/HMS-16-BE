@@ -11,12 +11,12 @@ import (
 	"time"
 )
 
-func NewAdminController(a usecase.AdminUsecase) *adminController {
+func NewAdminController(a admin.AdminUsecase) *adminController {
 	return &adminController{a}
 }
 
 type adminController struct {
-	admin usecase.AdminUsecase
+	admin admin.AdminUsecase
 }
 
 func (a *adminController) Create(c echo.Context) error {
