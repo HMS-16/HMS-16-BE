@@ -72,8 +72,8 @@ func (a *adminRepository) GetById(id string) (model.Admins, error) {
 }
 
 func (a *adminRepository) Update(admin model.Admins) error {
-	query := `UPDATE admins SET username = ?, password = ?, phone_num = ? WHERE id = ?`
-	_, err := a.db.Exec(query, admin.Username, admin.Password, admin.PhoneNum, admin.ID)
+	query := `UPDATE admins SET updated_at = ?, username = ?, phone_num = ? WHERE id = ?`
+	_, err := a.db.Exec(query, admin.UpdatedAt, admin.Username, admin.PhoneNum, admin.ID)
 	if err != nil {
 		return err
 	}

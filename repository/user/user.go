@@ -54,7 +54,7 @@ func (u *userRepository) Login(username string) (model.Users, error) {
 }
 
 func (u *userRepository) GetAll() ([]dto.User, error) {
-	query := `SELECT id, created_at, updated_at, username, email, phone_num, role FROM users`
+	query := `SELECT id, created_at, updated_at, username, email, phone_num, role FROM users WHERE role = 1 OR role = 2`
 	row, err := u.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (u *userRepository) GetAll() ([]dto.User, error) {
 }
 
 func (u *userRepository) GetById(id string) (dto.User, error) {
-	query := `SELECT id, created_at, updated_at, username, email, phone_num, role FROM users WHERE id = ?`
+	query := `SELECT id, created_at, updated_at, username, email, phone_num, role FROM users WHERE id = ? AND (role = 1 OR role = 2)`
 	row, err := u.db.Query(query, id)
 	if err != nil {
 		return dto.User{}, err
@@ -95,8 +95,8 @@ func (u *userRepository) GetById(id string) (dto.User, error) {
 }
 
 func (u *userRepository) Update(user model.Users) error {
-	query := `INSERT users SET username = ?, email = ?, phone_num = ? WHERE id = ?`
-	_, err := u.db.Exec(query, user.Username, user.Email, user.PhoneNum, user.Id)
+	query := `UPDATE users SET updated_at = ?, username = ?, email = ?, phone_num = ? WHERE id = ?`
+	_, err := u.db.Exec(query, user.UpdatedAt, user.Username, user.Email, user.PhoneNum, user.Id)
 	if err != nil {
 		return err
 	}

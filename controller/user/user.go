@@ -7,6 +7,7 @@ import (
 	"HMS-16-BE/util/hash"
 	"HMS-16-BE/util/middleware"
 	"HMS-16-BE/util/uuid"
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
@@ -28,7 +29,13 @@ func (u *userController) Create(c echo.Context) error {
 	user.UpdatedAt = user.CreatedAt
 	user.Password, _ = hash.HashPassword(user.Password)
 
-	err := u.user.Create(user)
+	validate := validator.New()
+	err := validate.Struct(&user)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err = u.user.Create(user)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -86,7 +93,9 @@ func (u *userController) Update(c echo.Context) error {
 	var user model.Users
 	c.Bind(&user)
 	user.UpdatedAt = time.Now()
-	user.Password, _ = hash.HashPassword(user.Password)
+
+	id := c.Param("id")
+	user.Id = id
 
 	err := u.user.Update(user)
 	if err != nil {
