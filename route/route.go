@@ -3,10 +3,13 @@ package route
 import (
 	"HMS-16-BE/config"
 	adminctrl "HMS-16-BE/controller/admin"
+	patientctrl "HMS-16-BE/controller/patient"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
+	patientrepo "HMS-16-BE/repository/patient"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
+	patientuc "HMS-16-BE/usecase/patient"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
 	"database/sql"
@@ -17,12 +20,15 @@ import (
 func Init(e *echo.Echo, db *sql.DB) {
 	adminRepo := adminrepo.NewAdminRepository(db)
 	userRepo := userrepo.NewUserRepository(db)
+	patientRepo := patientrepo.NewPatientRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
+	patientUC := patientuc.NewPatientUsecase(patientRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
+	patientCtrl := patientctrl.NewPatientController(patientUC)
 
 	middleware.LogMiddleware(e)
 	v1 := e.Group("/v1")
@@ -54,4 +60,16 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userV1JWT.GET("/accounts/:id", userCtrl.GetById)
 	userV1JWT.PUT("/accounts/:id", userCtrl.Update)
 	userV1JWT.DELETE("/accounts/:id", userCtrl.Delete)
+
+	patients := v1.Group("/patients")
+	patients.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		ContextKey: "jwt-token",
+	}))
+	patients.Use(middleware.AuthorizationAdmin)
+	patients.GET("", patientCtrl.GetAll)
+	patients.GET("/:id", patientCtrl.GetById)
+	patients.POST("", patientCtrl.Create)
+	patients.PUT("/:id", patientCtrl.Update)
+	patients.DELETE("/:id", patientCtrl.Delete)
 }

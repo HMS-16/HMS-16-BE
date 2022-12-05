@@ -7,8 +7,9 @@ import (
 	"time"
 )
 
-func CreateToken(username, role string) (string, error) {
+func CreateToken(id, username, role string) (string, error) {
 	claims := jwt.MapClaims{}
+	claims["id"] = id
 	claims["role"] = role
 	claims["username"] = username
 	claims["iat"] = time.Now().Unix()
@@ -18,9 +19,16 @@ func CreateToken(username, role string) (string, error) {
 	return token.SignedString([]byte(config.Cfg.JWT_SECRET_KEY))
 }
 
-func GetJWT(c echo.Context) string {
+func GetRoleJWT(c echo.Context) string {
 	token := c.Get("jwt-token").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 	role := claims["role"].(string)
 	return role
+}
+
+func GetIdJWT(c echo.Context) string {
+	token := c.Get("jwt-token").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	id := claims["id"].(string)
+	return id
 }

@@ -54,7 +54,7 @@ func (u *userController) Login(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
-	token, _ := middleware.CreateToken(user.Username, dto.Role[user.Role])
+	token, _ := middleware.CreateToken(user.Id, user.Username, dto.Role[user.Role])
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",

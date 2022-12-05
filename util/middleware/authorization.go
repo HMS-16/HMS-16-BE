@@ -7,7 +7,7 @@ import (
 
 func AuthorizationAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		role := GetJWT(c)
+		role := GetRoleJWT(c)
 		if role != "admin" {
 			return c.JSON(http.StatusUnauthorized, echo.Map{
 				"message": "url access for admin",

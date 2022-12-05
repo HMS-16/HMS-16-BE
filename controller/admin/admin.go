@@ -53,7 +53,7 @@ func (a *adminController) Login(c echo.Context) error {
 	}
 
 	role := "admin"
-	token, _ := middleware.CreateToken(adminDB.Username, role)
+	token, _ := middleware.CreateToken(adminDB.ID, adminDB.Username, role)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success login",

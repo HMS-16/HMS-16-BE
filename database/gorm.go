@@ -31,5 +31,6 @@ func InitGorm() {
 	DB.AutoMigrate(
 		&model.Admins{},
 		&model.Users{},
+		&model.Patients{},
 	)
 }
