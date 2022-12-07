@@ -25,18 +25,18 @@ type Patients struct {
 
 func (p *Patients) ToDTO() *dto.Patients {
 	return &dto.Patients{
-		p.Id,
-		p.CreatedAt,
-		p.UpdatedAt,
-		p.Name,
-		p.POB,
-		p.DOB,
-		p.Gender,
-		p.Married,
-		p.PhoneNum,
-		p.Email,
-		p.AdminId,
-		p.GetAge(),
+		Id:        p.Id,
+		CreatedAt: p.CreatedAt,
+		UpdatedAt: p.UpdatedAt,
+		Name:      p.Name,
+		POB:       p.POB,
+		DOB:       p.DOB,
+		Gender:    p.Gender,
+		Married:   p.Married,
+		PhoneNum:  p.PhoneNum,
+		Email:     p.Email,
+		AdminId:   p.AdminId,
+		Age:       p.GetAge(),
 	}
 }
 

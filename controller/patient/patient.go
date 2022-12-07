@@ -72,10 +72,17 @@ func (p *patientController) Create(c echo.Context) error {
 func (p *patientController) Update(c echo.Context) error {
 	var patient model.Patients
 	id := c.Param("id")
+	c.Bind(&patient)
 	patient.Id = id
 	patient.UpdatedAt = time.Now()
 
-	err := p.patient.Update(patient)
+	validate := validator.New()
+	err := validate.Struct(patient)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err = p.patient.Update(patient)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

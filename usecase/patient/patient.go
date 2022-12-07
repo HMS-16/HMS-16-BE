@@ -15,25 +15,30 @@ type PatientUsecase interface {
 }
 
 type patientUsecase struct {
-	patient patient.PatientRepository
+	patient  patient.PatientRepository
+	guardian patient.GuardianRepositoy
 }
 
-func NewPatientUsecase(p patient.PatientRepository) *patientUsecase {
-	return &patientUsecase{p}
+func NewPatientUsecase(p patient.PatientRepository, g patient.GuardianRepositoy) *patientUsecase {
+	return &patientUsecase{p, g}
 }
 
 func (p *patientUsecase) GetAll() ([]dto.Patients, error) {
 	var patientsDTO []dto.Patients
 	patients, err := p.patient.GetAll()
 	for _, patient := range patients {
-		patientsDTO = append(patientsDTO, *patient.ToDTO())
+		dto := *patient.ToDTO()
+		dto.Guardians, err = p.guardian.GetAllByPatientId(patient.Id)
+		patientsDTO = append(patientsDTO, dto)
 	}
 	return patientsDTO, err
 }
 
 func (p *patientUsecase) GetById(id string) (dto.Patients, error) {
 	patient, err := p.patient.GetById(id)
-	return *patient.ToDTO(), err
+	dto := *patient.ToDTO()
+	dto.Guardians, err = p.guardian.GetAllByPatientId(patient.Id)
+	return dto, err
 }
 
 func (p *patientUsecase) Create(patient model.Patients) error {

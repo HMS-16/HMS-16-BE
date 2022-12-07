@@ -21,14 +21,17 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminRepo := adminrepo.NewAdminRepository(db)
 	userRepo := userrepo.NewUserRepository(db)
 	patientRepo := patientrepo.NewPatientRepository(db)
+	guardianRepo := patientrepo.NewGuardianRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
-	patientUC := patientuc.NewPatientUsecase(patientRepo)
+	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
+	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
 	patientCtrl := patientctrl.NewPatientController(patientUC)
+	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
 
 	middleware.LogMiddleware(e)
 	v1 := e.Group("/v1")
@@ -72,4 +75,10 @@ func Init(e *echo.Echo, db *sql.DB) {
 	patients.POST("", patientCtrl.Create)
 	patients.PUT("/:id", patientCtrl.Update)
 	patients.DELETE("/:id", patientCtrl.Delete)
+
+	guardian := patients.Group("/guardians")
+	guardian.GET("/:id", guardianCtrl.GetById)   //id = guardian id
+	guardian.POST("/:id", guardianCtrl.Create)   //id = patient id
+	guardian.PUT("/:id", guardianCtrl.Update)    //guardian id
+	guardian.DELETE("/:id", guardianCtrl.Delete) //guardian id
 }
