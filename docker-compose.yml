@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  db-mysql:
+    image: "mysql:latest"
+    restart: always
+    ports:
+      - ":3306"
+    environment:
+      MYSQL_ROOT_PASSWORD : "019283"
+      MYSQL_DATABASE: "db_hms"
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root",  "-p019283", "-e", "show schemas"]
+      interval: 15s
+
+  app:
+    build: .
+    restart: always
+    environment:
+      DB_HOST: "db-mysql"
+      DB_ADDRESS: "db-mysql:3306"
+    env_file:
+      - ".env"
+    ports:
+      - "80:8080"
+    depends_on:
+      db-mysql:
+        condition: service_healthy
