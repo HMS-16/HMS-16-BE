@@ -20,6 +20,7 @@ type Patients struct {
 	District  string    `json:"district" validate:"required"`
 	City      string    `json:"city" validate:"required"`
 	Province  string    `json:"province" validate:"required"`
+	Status    bool      `json:"status" validate:"required" default:"0"`
 	AdminId   string    `json:"admin_id" validate:"required"`
 }
 
@@ -35,6 +36,11 @@ func (p *Patients) ToDTO() *dto.Patients {
 		Married:   p.Married,
 		PhoneNum:  p.PhoneNum,
 		Email:     p.Email,
+		Address:   p.Address,
+		District:  p.District,
+		City:      p.City,
+		Province:  p.Province,
+		Status:    p.Status,
 		AdminId:   p.AdminId,
 		Age:       p.GetAge(),
 	}

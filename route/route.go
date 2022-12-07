@@ -3,12 +3,15 @@ package route
 import (
 	"HMS-16-BE/config"
 	adminctrl "HMS-16-BE/controller/admin"
+	doctorctrl "HMS-16-BE/controller/doctor"
 	patientctrl "HMS-16-BE/controller/patient"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
+	doctorrepo "HMS-16-BE/repository/doctor"
 	patientrepo "HMS-16-BE/repository/patient"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
+	doctoruc "HMS-16-BE/usecase/doctor"
 	patientuc "HMS-16-BE/usecase/patient"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
@@ -22,16 +25,19 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userRepo := userrepo.NewUserRepository(db)
 	patientRepo := patientrepo.NewPatientRepository(db)
 	guardianRepo := patientrepo.NewGuardianRepository(db)
+	doctorRepo := doctorrepo.NewDoctorRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
 	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
+	doctorUC := doctoruc.NewDoctorUsecase(doctorRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
 	patientCtrl := patientctrl.NewPatientController(patientUC)
 	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
+	doctorCtrl := doctorctrl.NewDoctorController(doctorUC)
 
 	middleware.LogMiddleware(e)
 	v1 := e.Group("/v1")
@@ -81,4 +87,16 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardian.POST("/:id", guardianCtrl.Create)   //id = patient id
 	guardian.PUT("/:id", guardianCtrl.Update)    //guardian id
 	guardian.DELETE("/:id", guardianCtrl.Delete) //guardian id
+
+	doctor := v1.Group("/doctors")
+	doctor.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		ContextKey: "jwt-token",
+	}))
+	doctor.Use(middleware.AuthorizationDoctor)
+	doctor.GET("/all", doctorCtrl.GetAll)
+	doctor.GET("", doctorCtrl.GetById)
+	doctor.POST("", doctorCtrl.Create)
+	doctor.PUT("", doctorCtrl.Update)
+	doctor.DELETE("", doctorCtrl.Delete)
 }
