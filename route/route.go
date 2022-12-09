@@ -5,14 +5,17 @@ import (
 	adminctrl "HMS-16-BE/controller/admin"
 	patientctrl "HMS-16-BE/controller/patient"
 	profilectrl "HMS-16-BE/controller/profile"
+	schedulectrl "HMS-16-BE/controller/schedule"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
 	patientrepo "HMS-16-BE/repository/patient"
 	profilerepo "HMS-16-BE/repository/profile"
+	schedulerepo "HMS-16-BE/repository/schedule"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
 	patientuc "HMS-16-BE/usecase/patient"
 	profileuc "HMS-16-BE/usecase/profile"
+	scheduleuc "HMS-16-BE/usecase/schedule"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
 	"database/sql"
@@ -28,6 +31,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianRepo := patientrepo.NewGuardianRepository(db)
 	doctorRepo := profilerepo.NewDoctorRepository(db)
 	nurseRepo := profilerepo.NewNurseRepository(db)
+	shiftRepo := schedulerepo.NewShiftRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
@@ -35,6 +39,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
 	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)
 	nurseUC := profileuc.NewNurseUsecase(nurseRepo)
+	shiftUC := scheduleuc.NewShiftUsecase(shiftRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
@@ -42,6 +47,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
 	doctorCtrl := profilectrl.NewDoctorController(doctorUC)
 	nurseCtrl := profilectrl.NewNurseController(nurseUC)
+	shiftCtrl := schedulectrl.NewShiftController(shiftUC)
 
 	secretJWT := os.Getenv("JWT_SECRET_KEY")
 	if secretJWT == "" {
@@ -120,4 +126,18 @@ func Init(e *echo.Echo, db *sql.DB) {
 	nurse.POST("", nurseCtrl.Create)
 	nurse.PUT("", nurseCtrl.Update)
 	nurse.DELETE("", nurseCtrl.Delete)
+
+	shiftDoctor := doctor.Group("")
+	shiftDoctor.GET("", shiftCtrl.GetAllByUserId)
+	shiftDoctor.GET("/:id", shiftCtrl.GetById)
+	shiftDoctor.POST("", shiftCtrl.Create)
+	shiftDoctor.POST("/:id", shiftCtrl.Update)
+	shiftDoctor.DELETE("/:id", shiftCtrl.Delete)
+
+	shiftNurse := nurse.Group("")
+	shiftNurse.GET("", shiftCtrl.GetAllByUserId)
+	shiftNurse.GET("/:id", shiftCtrl.GetById)
+	shiftNurse.POST("", shiftCtrl.Create)
+	shiftNurse.POST("/:id", shiftCtrl.Update)
+	shiftNurse.DELETE("/:id", shiftCtrl.Delete)
 }
