@@ -20,7 +20,7 @@ type Patients struct {
 	District  string    `json:"district" validate:"required"`
 	City      string    `json:"city" validate:"required"`
 	Province  string    `json:"province" validate:"required"`
-	Status    bool      `json:"status" validate:"required" default:"0"`
+	Status    bool      `json:"status" default:"false"`
 	AdminId   string    `json:"admin_id" validate:"required"`
 }
 

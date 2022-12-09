@@ -50,7 +50,7 @@ func (u *userController) Login(c echo.Context) error {
 	c.Bind(&userInput)
 
 	user, err := u.user.Login(userInput.Username)
-	if err != nil && hash.CheckPasswordHash(userInput.Password, user.Password) {
+	if err != nil || !hash.CheckPasswordHash(userInput.Password, user.Password) {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 

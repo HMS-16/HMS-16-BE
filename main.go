@@ -6,16 +6,25 @@ import (
 	"HMS-16-BE/route"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"os"
 )
 
 func main() {
-	config.InitConfig()
+	appMode := os.Getenv("APP_MODE")
+	if appMode == "" {
+		config.InitConfig()
+	}
 	database.InitGorm()
 	db := database.InitMySql()
 
 	app := echo.New()
 	route.Init(app, db)
 
-	port := fmt.Sprintf(":%s", config.Cfg.API_PORT)
+	app_port := os.Getenv("PORT")
+	if app_port == "" {
+		app_port = config.Cfg.API_PORT
+	}
+
+	port := fmt.Sprintf(":%s", app_port)
 	app.Logger.Fatal(app.Start(port))
 }
