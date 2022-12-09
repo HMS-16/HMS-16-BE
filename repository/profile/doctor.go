@@ -1,4 +1,4 @@
-package doctor
+package profile
 
 import (
 	"HMS-16-BE/model"
@@ -66,11 +66,11 @@ func (d *doctorRepository) GetById(id string) (model.Doctors, error) {
 }
 
 func (d *doctorRepository) Create(doctor model.Doctors) error {
-	query := `INSERT INTO doctors VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO doctors VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	_, err := d.db.Exec(query, doctor.StrNum, doctor.UserId, doctor.CreatedAt, doctor.UpdatedAt, doctor.Name,
 		doctor.POB, doctor.DOB, doctor.Gender, doctor.Married, doctor.PhoneNum, doctor.Email,
 		doctor.Address, doctor.District, doctor.City, doctor.Province, doctor.EntryYear,
-		doctor.DoctorYear, doctor.LastEducation, doctor.UrlImage)
+		doctor.DoctorYear, doctor.LastEducation, doctor.UrlImage, doctor.Specialist)
 	if err != nil {
 		return err
 	}

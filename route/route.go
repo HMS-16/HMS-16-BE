@@ -3,16 +3,16 @@ package route
 import (
 	"HMS-16-BE/config"
 	adminctrl "HMS-16-BE/controller/admin"
-	doctorctrl "HMS-16-BE/controller/doctor"
 	patientctrl "HMS-16-BE/controller/patient"
+	profilectrl "HMS-16-BE/controller/profile"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
-	doctorrepo "HMS-16-BE/repository/doctor"
 	patientrepo "HMS-16-BE/repository/patient"
+	profilerepo "HMS-16-BE/repository/profile"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
-	doctoruc "HMS-16-BE/usecase/doctor"
 	patientuc "HMS-16-BE/usecase/patient"
+	profileuc "HMS-16-BE/usecase/profile"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
 	"database/sql"
@@ -26,19 +26,22 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userRepo := userrepo.NewUserRepository(db)
 	patientRepo := patientrepo.NewPatientRepository(db)
 	guardianRepo := patientrepo.NewGuardianRepository(db)
-	doctorRepo := doctorrepo.NewDoctorRepository(db)
+	doctorRepo := profilerepo.NewDoctorRepository(db)
+	nurseRepo := profilerepo.NewNurseRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
 	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
-	doctorUC := doctoruc.NewDoctorUsecase(doctorRepo)
+	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)
+	nurseUC := profileuc.NewNurseUsecase(nurseRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
 	patientCtrl := patientctrl.NewPatientController(patientUC)
 	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
-	doctorCtrl := doctorctrl.NewDoctorController(doctorUC)
+	doctorCtrl := profilectrl.NewDoctorController(doctorUC)
+	nurseCtrl := profilectrl.NewNurseController(nurseUC)
 
 	secretJWT := os.Getenv("JWT_SECRET_KEY")
 	if secretJWT == "" {
@@ -105,4 +108,16 @@ func Init(e *echo.Echo, db *sql.DB) {
 	doctor.POST("", doctorCtrl.Create)
 	doctor.PUT("", doctorCtrl.Update)
 	doctor.DELETE("", doctorCtrl.Delete)
+
+	nurse := v1.Group("/nurses")
+	nurse.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(secretJWT),
+		ContextKey: "jwt-token",
+	}))
+	nurse.Use(middleware.AuthorizationNurse)
+	nurse.GET("/all", nurseCtrl.GetAll)
+	nurse.GET("", nurseCtrl.GetById)
+	nurse.POST("", nurseCtrl.Create)
+	nurse.PUT("", nurseCtrl.Update)
+	nurse.DELETE("", nurseCtrl.Delete)
 }

@@ -1,8 +1,8 @@
-package doctor
+package profile
 
 import (
 	"HMS-16-BE/model"
-	"HMS-16-BE/repository/doctor"
+	"HMS-16-BE/repository/profile"
 )
 
 type DoctorUsecase interface {
@@ -14,10 +14,10 @@ type DoctorUsecase interface {
 }
 
 type doctorUsecase struct {
-	doctor doctor.DoctorRepository
+	doctor profile.DoctorRepository
 }
 
-func NewDoctorUsecase(d doctor.DoctorRepository) *doctorUsecase {
+func NewDoctorUsecase(d profile.DoctorRepository) *doctorUsecase {
 	return &doctorUsecase{d}
 }
 
