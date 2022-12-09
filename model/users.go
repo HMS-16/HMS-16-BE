@@ -19,12 +19,12 @@ type Users struct {
 
 func (u *Users) ToDTO() *dto.User {
 	return &dto.User{
-		u.Id,
-		u.CreatedAt,
-		u.UpdatedAt,
-		u.Username,
-		u.Email,
-		u.PhoneNum,
-		u.Role,
+		Id:        u.Id,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+		Username:  u.Username,
+		Email:     u.Email,
+		PhoneNum:  u.PhoneNum,
+		Role:      u.Role,
 	}
 }
