@@ -3,18 +3,22 @@ package route
 import (
 	"HMS-16-BE/config"
 	adminctrl "HMS-16-BE/controller/admin"
+	doctorctrl "HMS-16-BE/controller/doctor"
 	patientctrl "HMS-16-BE/controller/patient"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
+	doctorrepo "HMS-16-BE/repository/doctor"
 	patientrepo "HMS-16-BE/repository/patient"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
+	doctoruc "HMS-16-BE/usecase/doctor"
 	patientuc "HMS-16-BE/usecase/patient"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
 	"database/sql"
 	"github.com/labstack/echo/v4"
 	mid "github.com/labstack/echo/v4/middleware"
+	"os"
 )
 
 func Init(e *echo.Echo, db *sql.DB) {
@@ -22,16 +26,24 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userRepo := userrepo.NewUserRepository(db)
 	patientRepo := patientrepo.NewPatientRepository(db)
 	guardianRepo := patientrepo.NewGuardianRepository(db)
+	doctorRepo := doctorrepo.NewDoctorRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
 	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
+	doctorUC := doctoruc.NewDoctorUsecase(doctorRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
 	patientCtrl := patientctrl.NewPatientController(patientUC)
 	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
+	doctorCtrl := doctorctrl.NewDoctorController(doctorUC)
+
+	secretJWT := os.Getenv("JWT_SECRET_KEY")
+	if secretJWT == "" {
+		secretJWT = config.Cfg.JWT_SECRET_KEY
+	}
 
 	middleware.LogMiddleware(e)
 	v1 := e.Group("/v1")
@@ -39,9 +51,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminV1.POST("/signup", adminCtrl.Create)
 	adminV1.POST("/login", adminCtrl.Login)
 
-	adminV1JWT := adminV1
+	adminV1JWT := e.Group("/v1/admins")
 	adminV1JWT.Use(mid.JWTWithConfig(mid.JWTConfig{
-		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
 	adminV1JWT.Use(middleware.AuthorizationAdmin)
@@ -49,14 +61,14 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminV1JWT.PUT("/:id", adminCtrl.Update)
 	adminV1JWT.DELETE("/:id", adminCtrl.Delete)
 
-	userV1 := v1
+	userV1 := e.Group("/v1")
 	userV1.POST("/login", userCtrl.Login)
-	userV1JWT := userV1
+	userV1JWT := e.Group("/v1")
 	userV1JWT.Use(mid.JWTWithConfig(mid.JWTConfig{
-		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
-	userV1JWTAdmin := userV1JWT
+	userV1JWTAdmin := userV1JWT.Group("")
 	userV1JWTAdmin.Use(middleware.AuthorizationAdmin)
 	userV1JWTAdmin.POST("/register", userCtrl.Create)
 	userV1JWTAdmin.GET("/accounts", userCtrl.GetAll)
@@ -64,9 +76,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userV1JWT.PUT("/accounts/:id", userCtrl.Update)
 	userV1JWT.DELETE("/accounts/:id", userCtrl.Delete)
 
-	patients := v1.Group("/patients")
+	patients := e.Group("/v1/patients")
 	patients.Use(mid.JWTWithConfig(mid.JWTConfig{
-		SigningKey: []byte(config.Cfg.JWT_SECRET_KEY),
+		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
 	patients.Use(middleware.AuthorizationAdmin)
@@ -81,4 +93,16 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardian.POST("/:id", guardianCtrl.Create)   //id = patient id
 	guardian.PUT("/:id", guardianCtrl.Update)    //guardian id
 	guardian.DELETE("/:id", guardianCtrl.Delete) //guardian id
+
+	doctor := v1.Group("/doctors")
+	doctor.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(secretJWT),
+		ContextKey: "jwt-token",
+	}))
+	doctor.Use(middleware.AuthorizationDoctor)
+	doctor.GET("/all", doctorCtrl.GetAll)
+	doctor.GET("", doctorCtrl.GetById)
+	doctor.POST("", doctorCtrl.Create)
+	doctor.PUT("", doctorCtrl.Update)
+	doctor.DELETE("", doctorCtrl.Delete)
 }

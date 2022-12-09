@@ -62,10 +62,10 @@ func (p *patientRepository) GetById(id string) (model.Patients, error) {
 }
 
 func (p *patientRepository) Create(patient model.Patients) error {
-	query := `INSERT INTO patients VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO patients VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	_, err := p.db.Exec(query, patient.Id, patient.CreatedAt, patient.UpdatedAt, patient.Name, patient.POB,
 		patient.DOB, patient.Gender, patient.Married, patient.PhoneNum, patient.Email, patient.Address,
-		patient.District, patient.City, patient.Province, patient.AdminId)
+		patient.District, patient.City, patient.Province, patient.AdminId, patient.Status)
 	if err != nil {
 		return err
 	}

@@ -1,9 +1,12 @@
-FROM golang:1.19
+FROM golang:alpine
 
-WORKDIR /HMS-16-BE
-COPY go.mod go.sum ./
-RUN go mod download
+WORKDIR /app
+
 COPY . .
 
+RUN go mod download
+RUN go build -o dist
+
 EXPOSE 8080
-CMD ["go", "run", "main.go"]
+
+ENTRYPOINT ["./dist"]
