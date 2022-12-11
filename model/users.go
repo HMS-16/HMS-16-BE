@@ -1,7 +1,6 @@
 package model
 
 import (
-	"HMS-16-BE/dto"
 	_ "github.com/go-playground/validator/v10"
 	"time"
 )
@@ -15,16 +14,4 @@ type Users struct {
 	Email     string    `json:"email" validate:"required,email"`
 	PhoneNum  string    `json:"phone_num" validate:"required,min=10"`
 	Role      int       `json:"role" validate:"required,gte=0,lte=2"`
-}
-
-func (u *Users) ToDTO() *dto.User {
-	return &dto.User{
-		Id:        u.Id,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
-		Username:  u.Username,
-		Email:     u.Email,
-		PhoneNum:  u.PhoneNum,
-		Role:      u.Role,
-	}
 }

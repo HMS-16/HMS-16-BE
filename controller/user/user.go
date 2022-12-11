@@ -58,7 +58,7 @@ func (u *userController) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
-		"data":    *user.ToDTO(),
+		"data":    *dto.UserDTO(&user),
 		"token":   token,
 	})
 }

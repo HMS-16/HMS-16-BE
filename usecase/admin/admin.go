@@ -43,7 +43,7 @@ func (a *adminUsecase) GetById(id string) (dto.Admin, error) {
 	if err != nil {
 		return dto.Admin{}, err
 	}
-	return *admin.ToDTO(), nil
+	return *dto.AdminDTO(&admin), nil
 }
 
 func (a *adminUsecase) Update(admin model.Admins) error {

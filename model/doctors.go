@@ -4,7 +4,7 @@ import "time"
 
 type Doctors struct {
 	StrNum        string    `json:"strNum" validate:"required"`
-	UserId        string    `json:"user_id" validate:"required"`
+	UserId        string    `json:"user_id"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Name          string    `json:"name" validate:"required"`
