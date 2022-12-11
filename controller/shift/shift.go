@@ -1,9 +1,8 @@
-package schedule
+package shift
 
 import (
 	"HMS-16-BE/model"
-	"HMS-16-BE/usecase/schedule"
-	"HMS-16-BE/util/middleware"
+	"HMS-16-BE/usecase/shift"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -11,17 +10,29 @@ import (
 )
 
 type shiftController struct {
-	shift schedule.ShiftUsecase
+	shift shift.ShiftUsecase
 }
 
-func NewShiftController(s schedule.ShiftUsecase) *shiftController {
+func NewShiftController(s shift.ShiftUsecase) *shiftController {
 	return &shiftController{s}
 }
 
-func (s *shiftController) GetAllByUserId(c echo.Context) error {
-	id := middleware.GetIdJWT(c)
+func (s *shiftController) GetAll(c echo.Context) error {
+	shifts, err := s.shift.GetAll()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
 
-	shifts, err := s.shift.GetAllByUserId(id)
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    shifts,
+	})
+}
+
+func (s *shiftController) GetAllByUserId(c echo.Context) error {
+	userId := c.Param("id")
+
+	shifts, err := s.shift.GetAllByUserId(userId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

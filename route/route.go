@@ -5,17 +5,17 @@ import (
 	adminctrl "HMS-16-BE/controller/admin"
 	patientctrl "HMS-16-BE/controller/patient"
 	profilectrl "HMS-16-BE/controller/profile"
-	schedulectrl "HMS-16-BE/controller/schedule"
+	shiftctrl "HMS-16-BE/controller/shift"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
 	patientrepo "HMS-16-BE/repository/patient"
 	profilerepo "HMS-16-BE/repository/profile"
-	schedulerepo "HMS-16-BE/repository/schedule"
+	shiftrepo "HMS-16-BE/repository/shift"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
 	patientuc "HMS-16-BE/usecase/patient"
 	profileuc "HMS-16-BE/usecase/profile"
-	scheduleuc "HMS-16-BE/usecase/schedule"
+	shiftuc "HMS-16-BE/usecase/shift"
 	useruc "HMS-16-BE/usecase/user"
 	"HMS-16-BE/util/middleware"
 	"database/sql"
@@ -31,7 +31,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianRepo := patientrepo.NewGuardianRepository(db)
 	doctorRepo := profilerepo.NewDoctorRepository(db)
 	nurseRepo := profilerepo.NewNurseRepository(db)
-	shiftRepo := schedulerepo.NewShiftRepository(db)
+	shiftRepo := shiftrepo.NewShiftRepository(db)
+	timeRepo := shiftrepo.NewTimeRepository(db)
+	dayRepo := shiftrepo.NewDayRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
@@ -39,7 +41,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
 	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)
 	nurseUC := profileuc.NewNurseUsecase(nurseRepo)
-	shiftUC := scheduleuc.NewShiftUsecase(shiftRepo)
+	shiftUC := shiftuc.NewShiftUsecase(shiftRepo, dayRepo, timeRepo)
+	timeUC := shiftuc.NewtimeUsecase(timeRepo)
+	dayUC := shiftuc.NewDayUsecase(dayRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
@@ -47,7 +51,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
 	doctorCtrl := profilectrl.NewDoctorController(doctorUC)
 	nurseCtrl := profilectrl.NewNurseController(nurseUC)
-	shiftCtrl := schedulectrl.NewShiftController(shiftUC)
+	shiftCtrl := shiftctrl.NewShiftController(shiftUC)
+	timeCtrl := shiftctrl.NewTimeController(timeUC)
+	dayCtrl := shiftctrl.NewDayController(dayUC)
 
 	secretJWT := os.Getenv("JWT_SECRET_KEY")
 	if secretJWT == "" {
@@ -128,16 +134,32 @@ func Init(e *echo.Echo, db *sql.DB) {
 	nurse.DELETE("", nurseCtrl.Delete)
 
 	shiftDoctor := doctor.Group("")
-	shiftDoctor.GET("", shiftCtrl.GetAllByUserId)
+	shiftDoctor.GET("", shiftCtrl.GetAll)
+	shiftDoctor.GET("/:id", shiftCtrl.GetAllByUserId)
 	shiftDoctor.GET("/:id", shiftCtrl.GetById)
 	shiftDoctor.POST("", shiftCtrl.Create)
-	shiftDoctor.POST("/:id", shiftCtrl.Update)
+	shiftDoctor.PUT("/:id", shiftCtrl.Update)
 	shiftDoctor.DELETE("/:id", shiftCtrl.Delete)
 
 	shiftNurse := nurse.Group("")
-	shiftNurse.GET("", shiftCtrl.GetAllByUserId)
+	shiftNurse.GET("", shiftCtrl.GetAll)
+	shiftNurse.GET("/:id", shiftCtrl.GetAllByUserId)
 	shiftNurse.GET("/:id", shiftCtrl.GetById)
 	shiftNurse.POST("", shiftCtrl.Create)
-	shiftNurse.POST("/:id", shiftCtrl.Update)
+	shiftNurse.PUT("/:id", shiftCtrl.Update)
 	shiftNurse.DELETE("/:id", shiftCtrl.Delete)
+
+	time := v1.Group("/shifts/times")
+	time.GET("", timeCtrl.GetAll)
+	time.GET("/:id", timeCtrl.GetById)
+	time.POST("", timeCtrl.Create)
+	time.PUT("/:id", timeCtrl.Update)
+	time.DELETE("/:id", timeCtrl.Delete)
+
+	day := v1.Group("/shifts/day")
+	day.GET("", dayCtrl.GetAll)
+	day.GET("/:id", dayCtrl.GetById)
+	day.POST("", dayCtrl.Create)
+	day.PUT("/:id", dayCtrl.Update)
+	day.DELETE("/:id", dayCtrl.Delete)
 }
