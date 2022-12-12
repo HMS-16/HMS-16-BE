@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - "master"
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
   testing:
     name: "Testing"
@@ -17,8 +19,6 @@ jobs:
           go-version: 1.19
       - name: run unit test
         run: go test -v ./...
-      - name: run linting
-        uses: golangci/golangci-lint-action@v3
 
   deploy:
     name: "Deploy app"
@@ -28,6 +28,3 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run:
           flyctl deploy --remote-only
-
-  env:
-    FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
