@@ -27,18 +27,18 @@ func (p *patientUsecase) GetAll() ([]dto.Patients, error) {
 	var patientsDTO []dto.Patients
 	patients, err := p.patient.GetAll()
 	for _, patient := range patients {
-		dto := *patient.ToDTO()
+		dto := dto.PatientDTO(&patient)
 		dto.Guardians, err = p.guardian.GetAllByPatientId(patient.Id)
-		patientsDTO = append(patientsDTO, dto)
+		patientsDTO = append(patientsDTO, *dto)
 	}
 	return patientsDTO, err
 }
 
 func (p *patientUsecase) GetById(id string) (dto.Patients, error) {
 	patient, err := p.patient.GetById(id)
-	dto := *patient.ToDTO()
+	dto := dto.PatientDTO(&patient)
 	dto.Guardians, err = p.guardian.GetAllByPatientId(patient.Id)
-	return dto, err
+	return *dto, err
 }
 
 func (p *patientUsecase) Create(patient model.Patients) error {

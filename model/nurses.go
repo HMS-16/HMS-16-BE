@@ -2,9 +2,9 @@ package model
 
 import "time"
 
-type Doctors struct {
+type Nurses struct {
 	StrNum        string    `json:"strNum" validate:"required"`
-	UserId        string    `json:"user_id"`
+	UserId        string    `json:"user_id" validate:"required"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Name          string    `json:"name" validate:"required"`
@@ -19,7 +19,7 @@ type Doctors struct {
 	City          string    `json:"city" validate:"required"`
 	Province      string    `json:"province" validate:"required"`
 	EntryYear     string    `json:"entry_year" validate:"required"`
-	DoctorYear    string    `json:"doctor_year" validate:"required"`
+	NurseYear     string    `json:"nurse_year" validate:"required"`
 	LastEducation string    `json:"last_education" validate:"required"`
 	UrlImage      string    `json:"url_image"`
 	Specialist    string    `json:"specialist" validate:"required"`

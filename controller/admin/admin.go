@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/admin"
 	"HMS-16-BE/util/hash"
@@ -57,7 +58,7 @@ func (a *adminController) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success login",
-		"data":    *adminDB.ToDTO(),
+		"data":    *dto.AdminDTO(&admin),
 		"token":   token,
 	})
 }

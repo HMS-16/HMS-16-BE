@@ -49,5 +49,10 @@ func InitGorm() {
 		&model.Users{},
 		&model.Patients{},
 		&model.Guardians{},
+		&model.Doctors{},
+		&model.Nurses{},
+		&model.Shifts{},
+		&model.Times{},
+		&model.Days{},
 	)
 }

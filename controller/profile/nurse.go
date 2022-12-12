@@ -1,8 +1,8 @@
-package doctor
+package profile
 
 import (
 	"HMS-16-BE/model"
-	"HMS-16-BE/usecase/doctor"
+	"HMS-16-BE/usecase/profile"
 	"HMS-16-BE/util/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -10,54 +10,54 @@ import (
 	"time"
 )
 
-type doctorController struct {
-	doctor doctor.DoctorUsecase
+type nurseController struct {
+	nurse profile.NurseUsecase
 }
 
-func NewDoctorController(d doctor.DoctorUsecase) *doctorController {
-	return &doctorController{d}
+func NewNurseController(n profile.NurseUsecase) *nurseController {
+	return &nurseController{n}
 }
 
-func (d *doctorController) GetAll(c echo.Context) error {
-	doctors, err := d.doctor.GetAll()
+func (n *nurseController) GetAll(c echo.Context) error {
+	nurses, err := n.nurse.GetAll()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
-		"data":    doctors,
+		"data":    nurses,
 	})
 }
 
-func (d *doctorController) GetById(c echo.Context) error {
+func (n *nurseController) GetById(c echo.Context) error {
 	id := middleware.GetIdJWT(c)
 
-	doctor, err := d.doctor.GetById(id)
+	nurse, err := n.nurse.GetById(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
-		"data":    doctor,
+		"data":    nurse,
 	})
 }
 
-func (d *doctorController) Create(c echo.Context) error {
-	var doctor model.Doctors
-	c.Bind(&doctor)
-	doctor.CreatedAt = time.Now()
-	doctor.UpdatedAt = doctor.CreatedAt
-	doctor.UserId = middleware.GetIdJWT(c)
+func (n *nurseController) Create(c echo.Context) error {
+	var nurse model.Nurses
+	c.Bind(&nurse)
+	nurse.CreatedAt = time.Now()
+	nurse.UpdatedAt = nurse.CreatedAt
+	nurse.UserId = middleware.GetIdJWT(c)
 
 	validate := validator.New()
-	err := validate.Struct(&doctor)
+	err := validate.Struct(&nurse)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	err = d.doctor.Create(doctor)
+	err = n.nurse.Create(nurse)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -67,19 +67,19 @@ func (d *doctorController) Create(c echo.Context) error {
 	})
 }
 
-func (p *doctorController) Update(c echo.Context) error {
-	var doctor model.Doctors
-	c.Bind(&doctor)
-	doctor.UserId = middleware.GetIdJWT(c)
-	doctor.UpdatedAt = time.Now()
+func (n *nurseController) Update(c echo.Context) error {
+	var nurse model.Nurses
+	c.Bind(&nurse)
+	nurse.UserId = middleware.GetIdJWT(c)
+	nurse.UpdatedAt = time.Now()
 
 	validate := validator.New()
-	err := validate.Struct(doctor)
+	err := validate.Struct(nurse)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	err = p.doctor.Update(doctor)
+	err = n.nurse.Update(nurse)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -89,10 +89,10 @@ func (p *doctorController) Update(c echo.Context) error {
 	})
 }
 
-func (p *doctorController) Delete(c echo.Context) error {
+func (n *nurseController) Delete(c echo.Context) error {
 	id := middleware.GetIdJWT(c)
 
-	err := p.doctor.Delete(id)
+	err := n.nurse.Delete(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
