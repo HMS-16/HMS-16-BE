@@ -49,7 +49,7 @@ func (a *adminController) Login(c echo.Context) error {
 	c.Bind(&admin)
 
 	adminDB, err := a.admin.Login(admin.Username)
-	if err != nil && !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
+	if err != nil || !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
@@ -58,7 +58,7 @@ func (a *adminController) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success login",
-		"data":    *dto.AdminDTO(&admin),
+		"data":    *dto.AdminDTO(&adminDB),
 		"token":   token,
 	})
 }

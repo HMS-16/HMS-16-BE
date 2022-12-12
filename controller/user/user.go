@@ -49,12 +49,16 @@ func (u *userController) Login(c echo.Context) error {
 	var userInput model.Users
 	c.Bind(&userInput)
 
-	user, err := u.user.Login(userInput.Username)
-	if err != nil || !hash.CheckPasswordHash(userInput.Password, user.Password) {
+	user, err := u.user.Login(userInput.Email)
+	if err != nil {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
-	token, _ := middleware.CreateToken(user.Id, user.Username, dto.Role[user.Role])
+	if !hash.CheckPasswordHash(userInput.Password, user.Password) {
+		return c.JSON(http.StatusForbidden, err.Error())
+	}
+
+	token, _ := middleware.CreateToken(user.Id, user.Email, dto.Role[user.Role])
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
