@@ -86,7 +86,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userV1JWTAdmin := userV1JWT.Group("")
 	userV1JWTAdmin.Use(middleware.AuthorizationAdmin)
 	userV1JWTAdmin.POST("/register", userCtrl.Create)
-	userV1JWTAdmin.GET("/accounts", userCtrl.GetAll)
+	userV1JWT.GET("/accounts", userCtrl.GetAll)
 	userV1JWT.GET("/accounts/:id", userCtrl.GetById)
 	userV1JWT.PUT("/accounts/:id", userCtrl.Update)
 	userV1JWT.DELETE("/accounts/:id", userCtrl.Delete)

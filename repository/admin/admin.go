@@ -22,7 +22,7 @@ func NewAdminRepository(db *sql.DB) *adminRepository {
 }
 
 func (a *adminRepository) Create(admin model.Admins) error {
-	query := `INSERT INTO admins(id, created_id, updated_id, username, password, phone_num, email, name) VALUES (?,?,?,?,?,?,?)`
+	query := `INSERT INTO admins VALUES (?,?,?,?,?,?,?,?)`
 	_, err := a.db.Exec(query, admin.ID, admin.CreatedAt, admin.UpdatedAt, admin.Username, admin.Password,
 		admin.PhoneNum, admin.Email, admin.Name)
 	if err != nil {

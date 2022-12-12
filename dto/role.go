@@ -4,4 +4,5 @@ var Role = []string{
 	"admin",
 	"doctor",
 	"nurse",
+	"admin",
 }
