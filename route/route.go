@@ -96,14 +96,18 @@ func Init(e *echo.Echo, db *sql.DB) {
 		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
-	patients.Use(middleware.AuthorizationAdmin)
+	patientsAdmin := patients.Group("")
+	patientsAdmin.Use(middleware.AuthorizationAdmin)
+	patientsAdmin.POST("", patientCtrl.Create)
+	patientsAdmin.PUT("/:id", patientCtrl.Update)
+	patientsAdmin.DELETE("/:id", patientCtrl.Delete)
 	patients.GET("", patientCtrl.GetAll)
+	patients.GET("/cards", patientCtrl.GetAllCards)
 	patients.GET("/:id", patientCtrl.GetById)
-	patients.POST("", patientCtrl.Create)
-	patients.PUT("/:id", patientCtrl.Update)
-	patients.DELETE("/:id", patientCtrl.Delete)
+	patients.PUT("/endcase/:id", patientCtrl.UpdateEndCase) //id patient
 
 	guardian := patients.Group("/guardians")
+	guardian.GET("", guardianCtrl.GetAll)
 	guardian.GET("/:id", guardianCtrl.GetById)   //id = guardian id
 	guardian.POST("/:id", guardianCtrl.Create)   //id = patient id
 	guardian.PUT("/:id", guardianCtrl.Update)    //guardian id

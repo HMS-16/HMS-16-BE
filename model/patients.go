@@ -13,12 +13,13 @@ type Patients struct {
 	DOB       string    `json:"dob" validate:"required"`
 	Gender    string    `json:"gender" validate:"required"`
 	Married   bool      `json:"married"`
+	BloodType string    `json:"blood_type"`
 	PhoneNum  string    `json:"phone_num"`
 	Email     string    `json:"email"`
 	Address   string    `json:"address" validate:"required"`
 	District  string    `json:"district" validate:"required"`
 	City      string    `json:"city" validate:"required"`
 	Province  string    `json:"province" validate:"required"`
-	Status    bool      `json:"status" default:"false"`
-	AdminId   string    `json:"admin_id" validate:"required"`
+	Status    bool      `json:"status" gorm:"default:false"`
+	AdminId   string    `json:"admin_id"`
 }

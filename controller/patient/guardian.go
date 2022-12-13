@@ -18,6 +18,17 @@ func NewGuardianController(g patient.GuardianUsecase) *guardianController {
 	return &guardianController{g}
 }
 
+func (g *guardianController) GetAll(c echo.Context) error {
+	guardians, err := g.guardian.GetAll()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    guardians,
+	})
+}
+
 func (g *guardianController) GetById(c echo.Context) error {
 	id := c.Param("id")
 
