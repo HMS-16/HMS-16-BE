@@ -12,6 +12,6 @@ type Users struct {
 	Username  string    `json:"username" validate:"required,min=3,max=32" gorm:"unique"`
 	Password  string    `json:"password" validate:"required,min=6"`
 	Email     string    `json:"email" validate:"required,email" gorm:"unique"`
-	Role      int       `json:"role" validate:"required,gte=0,lte=2"`
+	Role      int       `json:"role" validate:"required,gte=0,lte=3"`
 	STRNum    string    `json:"str_num" validate:"required"`
 }

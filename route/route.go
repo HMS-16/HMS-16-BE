@@ -133,7 +133,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	nurse.PUT("", nurseCtrl.Update)
 	nurse.DELETE("", nurseCtrl.Delete)
 
-	shiftDoctor := doctor.Group("")
+	shiftDoctor := doctor.Group("/shifts")
 	shiftDoctor.GET("", shiftCtrl.GetAll)
 	shiftDoctor.GET("/:id", shiftCtrl.GetAllByUserId)
 	shiftDoctor.GET("/:id", shiftCtrl.GetById)
@@ -141,7 +141,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	shiftDoctor.PUT("/:id", shiftCtrl.Update)
 	shiftDoctor.DELETE("/:id", shiftCtrl.Delete)
 
-	shiftNurse := nurse.Group("")
+	shiftNurse := nurse.Group("/shifts")
 	shiftNurse.GET("", shiftCtrl.GetAll)
 	shiftNurse.GET("/:id", shiftCtrl.GetAllByUserId)
 	shiftNurse.GET("/:id", shiftCtrl.GetById)

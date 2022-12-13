@@ -22,7 +22,7 @@ func NewAdminRepository(db *sql.DB) *adminRepository {
 }
 
 func (a *adminRepository) Create(admin model.Admins) error {
-	query := `INSERT INTO admins VALUES (?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO admins(id, created_at, updated_at, username, password, phone_num, email, name) VALUES (?,?,?,?,?,?,?,?)`
 	_, err := a.db.Exec(query, admin.ID, admin.CreatedAt, admin.UpdatedAt, admin.Username, admin.Password,
 		admin.PhoneNum, admin.Email, admin.Name)
 	if err != nil {
@@ -34,7 +34,7 @@ func (a *adminRepository) Create(admin model.Admins) error {
 func (a *adminRepository) Login(username string) (model.Admins, error) {
 	var admin model.Admins
 
-	query := `SELECT * FROM admins WHERE username = ?`
+	query := `SELECT id, created_at, updated_at, username, password, phone_num, email, name FROM admins WHERE username = ?`
 	row, err := a.db.Query(query, username)
 	if err != nil {
 		return model.Admins{}, err
@@ -54,7 +54,7 @@ func (a *adminRepository) Login(username string) (model.Admins, error) {
 func (a *adminRepository) GetById(id string) (model.Admins, error) {
 	var admin model.Admins
 
-	query := `SELECT * FROM admins WHERE id = ?`
+	query := `SELECT id, created_at, updated_at, username, password, phone_num, email, name FROM admins WHERE id = ?`
 	row, err := a.db.Query(query, id)
 	if err != nil {
 		return model.Admins{}, err
