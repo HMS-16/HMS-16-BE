@@ -1,13 +1,13 @@
 package patient
 
 import (
-	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
 	"HMS-16-BE/repository/patient"
 )
 
 type GuardianUsecase interface {
-	GetById(id string) (dto.Guardians, error)
+	GetAll() ([]model.Guardians, error)
+	GetById(id string) (model.Guardians, error)
 	Create(guardian model.Guardians) error
 	Update(guardian model.Guardians) error
 	Delete(id string) error
@@ -21,7 +21,12 @@ func NewGuardianUSecase(g patient.GuardianRepositoy) *guardianUsecase {
 	return &guardianUsecase{g}
 }
 
-func (g *guardianUsecase) GetById(id string) (dto.Guardians, error) {
+func (g *guardianUsecase) GetAll() ([]model.Guardians, error) {
+	guardians, err := g.guardian.GetAll()
+	return guardians, err
+}
+
+func (g *guardianUsecase) GetById(id string) (model.Guardians, error) {
 	guardian, err := g.guardian.GetById(id)
 	return guardian, err
 }

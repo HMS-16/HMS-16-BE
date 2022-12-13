@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 )
 
 var DB *gorm.DB
@@ -13,11 +14,26 @@ var DB *gorm.DB
 func InitGorm() {
 	cfg := config.Cfg
 
-	addr := cfg.DB_ADDRESS
-	port := cfg.DB_PORT
-	user := cfg.DB_USERNAME
-	pass := cfg.DB_PASSWORD
-	name := cfg.DB_NAME
+	addr := os.Getenv("DB_ADDRESS")
+	if addr == "" {
+		addr = cfg.DB_ADDRESS
+	}
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		port = cfg.DB_PORT
+	}
+	user := os.Getenv("DB_USERNAME")
+	if user == "" {
+		user = cfg.DB_USERNAME
+	}
+	pass := os.Getenv("DB_PASSWORD")
+	if pass == "" {
+		pass = cfg.DB_PASSWORD
+	}
+	name := os.Getenv("DB_NAME")
+	if name == "" {
+		name = cfg.DB_NAME
+	}
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		user, pass, addr, port, name)
@@ -33,5 +49,10 @@ func InitGorm() {
 		&model.Users{},
 		&model.Patients{},
 		&model.Guardians{},
+		&model.Doctors{},
+		&model.Nurses{},
+		&model.Shifts{},
+		&model.Times{},
+		&model.Days{},
 	)
 }

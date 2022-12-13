@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"HMS-16-BE/model"
+	"time"
+)
 
 type User struct {
 	Id        string    `json:"id"`
@@ -8,6 +11,16 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
-	PhoneNum  string    `json:"phone_num"`
 	Role      int       `json:"role"`
+}
+
+func UserDTO(user *model.Users) *User {
+	return &User{
+		Id:        user.Id,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Username:  user.Username,
+		Email:     user.Email,
+		Role:      user.Role,
+	}
 }

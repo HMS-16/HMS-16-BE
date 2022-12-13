@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/admin"
 	"HMS-16-BE/util/hash"
@@ -48,7 +49,7 @@ func (a *adminController) Login(c echo.Context) error {
 	c.Bind(&admin)
 
 	adminDB, err := a.admin.Login(admin.Username)
-	if err != nil && !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
+	if err != nil || !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
@@ -57,7 +58,7 @@ func (a *adminController) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success login",
-		"data":    *adminDB.ToDTO(),
+		"data":    *dto.AdminDTO(&adminDB),
 		"token":   token,
 	})
 }

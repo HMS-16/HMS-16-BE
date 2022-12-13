@@ -8,7 +8,7 @@ import (
 
 type UserUsecase interface {
 	Create(user model.Users) error
-	Login(username string) (model.Users, error)
+	Login(email string) (model.Users, error)
 	GetAll() ([]dto.User, error)
 	GetById(id string) (dto.User, error)
 	Update(user model.Users) error
@@ -27,8 +27,8 @@ func (u *userUsecase) Create(user model.Users) error {
 	return u.user.Create(user)
 }
 
-func (u *userUsecase) Login(username string) (model.Users, error) {
-	return u.user.Login(username)
+func (u *userUsecase) Login(email string) (model.Users, error) {
+	return u.user.Login(email)
 }
 
 func (u *userUsecase) GetAll() ([]dto.User, error) {

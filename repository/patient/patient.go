@@ -10,6 +10,7 @@ type PatientRepository interface {
 	GetById(id string) (model.Patients, error)
 	Create(patient model.Patients) error
 	Update(patient model.Patients) error
+	UpdateEndCase(id string) error
 	Delete(id string) error
 }
 
@@ -22,7 +23,7 @@ func NewPatientRepository(db *sql.DB) *patientRepository {
 }
 
 func (p *patientRepository) GetAll() ([]model.Patients, error) {
-	query := `SELECT * FROM patients ORDER BY name ASC`
+	query := `SELECT * FROM patients ORDER BY created_at ASC`
 	row, err := p.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -32,8 +33,8 @@ func (p *patientRepository) GetAll() ([]model.Patients, error) {
 	for row.Next() {
 		var patient model.Patients
 		err = row.Scan(&patient.Id, &patient.CreatedAt, &patient.UpdatedAt, &patient.Name, &patient.POB,
-			&patient.DOB, &patient.Gender, &patient.Married, &patient.PhoneNum, &patient.Email,
-			&patient.Address, &patient.District, &patient.City, &patient.Province, &patient.AdminId)
+			&patient.DOB, &patient.Gender, &patient.Married, &patient.BloodType, &patient.PhoneNum, &patient.Email,
+			&patient.Address, &patient.District, &patient.City, &patient.Province, &patient.Status, &patient.AdminId)
 		if err != nil {
 			return nil, err
 		}
@@ -52,8 +53,8 @@ func (p *patientRepository) GetById(id string) (model.Patients, error) {
 	var patient model.Patients
 	for row.Next() {
 		err = row.Scan(&patient.Id, &patient.CreatedAt, &patient.UpdatedAt, &patient.Name, &patient.POB,
-			&patient.DOB, &patient.Gender, &patient.Married, &patient.PhoneNum, &patient.Email,
-			&patient.Address, &patient.District, &patient.City, &patient.Province, &patient.AdminId)
+			&patient.DOB, &patient.Gender, &patient.Married, &patient.BloodType, &patient.PhoneNum, &patient.Email,
+			&patient.Address, &patient.District, &patient.City, &patient.Province, &patient.Status, &patient.AdminId)
 		if err != nil {
 			return model.Patients{}, err
 		}
@@ -62,10 +63,10 @@ func (p *patientRepository) GetById(id string) (model.Patients, error) {
 }
 
 func (p *patientRepository) Create(patient model.Patients) error {
-	query := `INSERT INTO patients VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO patients VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	_, err := p.db.Exec(query, patient.Id, patient.CreatedAt, patient.UpdatedAt, patient.Name, patient.POB,
-		patient.DOB, patient.Gender, patient.Married, patient.PhoneNum, patient.Email, patient.Address,
-		patient.District, patient.City, patient.Province, patient.AdminId)
+		patient.DOB, patient.Gender, patient.Married, patient.BloodType, patient.PhoneNum, patient.Email,
+		patient.Address, patient.District, patient.City, patient.Province, patient.Status, patient.AdminId)
 	if err != nil {
 		return err
 	}
@@ -73,10 +74,20 @@ func (p *patientRepository) Create(patient model.Patients) error {
 }
 
 func (p *patientRepository) Update(patient model.Patients) error {
-	query := `UPDATE patients SET updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, phone_num = ?,
-			email = ?, address = ?, district = ?, city = ?, province = ? WHERE id = ?`
+	query := `UPDATE patients SET updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, blood_type = ?, 
+            phone_num = ?, email = ?, address = ?, district = ?, city = ?, province = ? WHERE id = ?`
 	_, err := p.db.Exec(query, patient.UpdatedAt, patient.Name, patient.POB, patient.DOB, patient.Gender, patient.Married,
-		patient.PhoneNum, patient.Email, patient.Address, patient.District, patient.City, patient.Province, patient.Id)
+		patient.BloodType, patient.PhoneNum, patient.Email, patient.Address, patient.District, patient.City,
+		patient.Province, patient.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *patientRepository) UpdateEndCase(id string) error {
+	query := "UPDATE patients SET status = TRUE WHERE id = ?"
+	_, err := p.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
