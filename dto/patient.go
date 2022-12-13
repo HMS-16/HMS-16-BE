@@ -2,49 +2,67 @@ package dto
 
 import (
 	"HMS-16-BE/model"
+	"strings"
 	"time"
 )
 
-type Patients struct {
-	Id        string      `json:"id"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
-	Name      string      `json:"name"`
-	POB       string      `json:"pob"`
-	DOB       string      `json:"DOB"`
-	Gender    string      `json:"gender"`
-	Married   bool        `json:"married"`
-	PhoneNum  string      `json:"phone_num"`
-	Email     string      `json:"email"`
-	Address   string      `json:"address"`
-	District  string      `json:"district"`
-	City      string      `json:"city"`
-	Province  string      `json:"province"`
-	Status    bool        `json:"status"`
-	AdminId   string      `json:"admin_id"`
-	Age       int         `json:"age"`
-	Guardians []Guardians `json:"guardians"`
+type PatientCards struct {
+	Date   string `json:"date"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Age    int    `json:"age"`
+	Gender string `json:"gender"`
+	Status bool   `json:"status"`
 }
 
-func PatientDTO(p *model.Patients) *Patients {
+type Patients struct {
+	Id            string `json:"id"`
+	Name          string `json:"name"`
+	POB           string `json:"pob"`
+	DOB           string `json:"DOB"`
+	Gender        string `json:"gender"`
+	Married       bool   `json:"married"`
+	BloodType     string `json:"blood_type"`
+	PhoneNum      string `json:"phone_num"`
+	Email         string `json:"email"`
+	Address       string `json:"address"`
+	City          string `json:"city"`
+	Province      string `json:"province"`
+	FamilyName    string `json:"family_name"`
+	Relationship  string `json:"relationship"`
+	FamilyContact string `json:"family_contact"`
+	Status        bool   `json:"status"`
+}
+
+func PatientCardsDTO(p *model.Patients) *PatientCards {
+	return &PatientCards{
+		Date:   p.CreatedAt.String(),
+		Id:     p.Id,
+		Name:   p.Name,
+		Age:    GetAge(p),
+		Gender: p.Gender,
+		Status: p.Status,
+	}
+}
+
+func PatientDTO(p *model.Patients, g *model.Guardians) *Patients {
 	return &Patients{
-		Id:        p.Id,
-		CreatedAt: p.CreatedAt,
-		UpdatedAt: p.UpdatedAt,
-		Name:      p.Name,
-		POB:       p.POB,
-		DOB:       p.DOB,
-		Gender:    p.Gender,
-		Married:   p.Married,
-		PhoneNum:  p.PhoneNum,
-		Email:     p.Email,
-		Address:   p.Address,
-		District:  p.District,
-		City:      p.City,
-		Province:  p.Province,
-		Status:    p.Status,
-		AdminId:   p.AdminId,
-		Age:       GetAge(p),
+		Id:            p.Id,
+		Name:          p.Name,
+		POB:           p.POB,
+		DOB:           p.DOB,
+		Gender:        p.Gender,
+		Married:       p.Married,
+		PhoneNum:      p.PhoneNum,
+		BloodType:     p.BloodType,
+		Email:         p.Email,
+		Address:       strings.Join([]string{p.Address, p.District}, ", "),
+		City:          p.City,
+		Province:      p.Province,
+		FamilyName:    g.Name,
+		Relationship:  g.Relationship,
+		FamilyContact: g.PhoneNum,
+		Status:        p.Status,
 	}
 }
 
