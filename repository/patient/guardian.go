@@ -1,14 +1,14 @@
 package patient
 
 import (
-	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
 	"database/sql"
 )
 
 type GuardianRepositoy interface {
-	GetAllByPatientId(id string) ([]dto.Guardians, error)
-	GetById(id string) (dto.Guardians, error)
+	GetAll() ([]model.Guardians, error)
+	GetByPatientId(id string) (model.Guardians, error)
+	GetById(id string) (model.Guardians, error)
 	Create(guardian model.Guardians) error
 	Update(guardian model.Guardians) error
 	Delete(id string) error
@@ -22,16 +22,16 @@ func NewGuardianRepository(db *sql.DB) *guardianRepository {
 	return &guardianRepository{db}
 }
 
-func (g *guardianRepository) GetAllByPatientId(id string) ([]dto.Guardians, error) {
-	query := `SELECT * FROM guardians WHERE patient_id = ? ORDER BY name ASC`
-	row, err := g.db.Query(query, id)
+func (g *guardianRepository) GetAll() ([]model.Guardians, error) {
+	query := `SELECT * FROM guardians`
+	row, err := g.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	var guardians []dto.Guardians
+	var guardians []model.Guardians
 	defer row.Close()
 	for row.Next() {
-		var guardian dto.Guardians
+		var guardian model.Guardians
 		err = row.Scan(&guardian.Id, &guardian.CreatedAt, &guardian.UpdatedAt, &guardian.Name,
 			&guardian.Relationship, &guardian.PhoneNum, &guardian.Email, &guardian.Address, &guardian.District,
 			&guardian.City, &guardian.Province, &guardian.PatientId)
@@ -43,20 +43,39 @@ func (g *guardianRepository) GetAllByPatientId(id string) ([]dto.Guardians, erro
 	return guardians, nil
 }
 
-func (g *guardianRepository) GetById(id string) (dto.Guardians, error) {
-	query := `SELECT * FROM guardians WHERE id = ?`
+func (g *guardianRepository) GetByPatientId(id string) (model.Guardians, error) {
+	query := `SELECT * FROM guardians WHERE patient_id = ?`
 	row, err := g.db.Query(query, id)
 	if err != nil {
-		return dto.Guardians{}, err
+		return model.Guardians{}, err
 	}
-	var guardian dto.Guardians
+	var guardian model.Guardians
 	defer row.Close()
 	for row.Next() {
 		err = row.Scan(&guardian.Id, &guardian.CreatedAt, &guardian.UpdatedAt, &guardian.Name,
 			&guardian.Relationship, &guardian.PhoneNum, &guardian.Email, &guardian.Address, &guardian.District,
 			&guardian.City, &guardian.Province, &guardian.PatientId)
 		if err != nil {
-			return dto.Guardians{}, err
+			return model.Guardians{}, err
+		}
+	}
+	return guardian, nil
+}
+
+func (g *guardianRepository) GetById(id string) (model.Guardians, error) {
+	query := `SELECT * FROM guardians WHERE id = ?`
+	row, err := g.db.Query(query, id)
+	if err != nil {
+		return model.Guardians{}, err
+	}
+	var guardian model.Guardians
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&guardian.Id, &guardian.CreatedAt, &guardian.UpdatedAt, &guardian.Name,
+			&guardian.Relationship, &guardian.PhoneNum, &guardian.Email, &guardian.Address, &guardian.District,
+			&guardian.City, &guardian.Province, &guardian.PatientId)
+		if err != nil {
+			return model.Guardians{}, err
 		}
 	}
 	return guardian, nil

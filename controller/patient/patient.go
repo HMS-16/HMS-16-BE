@@ -31,6 +31,18 @@ func (p *patientController) GetAll(c echo.Context) error {
 	})
 }
 
+func (p *patientController) GetAllCards(c echo.Context) error {
+	patients, err := p.patient.GetAllCards()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    patients,
+	})
+}
+
 func (p *patientController) GetById(c echo.Context) error {
 	id := c.Param("id")
 
@@ -77,7 +89,7 @@ func (p *patientController) Update(c echo.Context) error {
 	patient.UpdatedAt = time.Now()
 
 	validate := validator.New()
-	err := validate.Struct(patient)
+	err := validate.Struct(&patient)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -87,6 +99,18 @@ func (p *patientController) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+	})
+}
+
+func (p *patientController) UpdateEndCase(c echo.Context) error {
+	id := c.Param("id")
+
+	err := p.patient.UpdateEndCase(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
 	})
