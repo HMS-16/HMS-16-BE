@@ -32,9 +32,9 @@ func (d *nurseRepository) GetAll() ([]model.Nurses, error) {
 	for row.Next() {
 		var nurse model.Nurses
 		err = row.Scan(&nurse.StrNum, &nurse.UserId, &nurse.CreatedAt, &nurse.UpdatedAt, &nurse.Name,
-			&nurse.POB, &nurse.DOB, &nurse.Gender, &nurse.Married, &nurse.PhoneNum, &nurse.Email,
-			&nurse.Address, &nurse.District, &nurse.City, &nurse.Province, &nurse.EntryYear,
-			&nurse.NurseYear, &nurse.LastEducation, &nurse.UrlImage)
+			&nurse.Competency, &nurse.POB, &nurse.DOB, &nurse.Gender, &nurse.Married, &nurse.PhoneNum,
+			&nurse.Email, &nurse.Address, &nurse.District, &nurse.City, &nurse.Province, &nurse.GraduationYear,
+			&nurse.ExpYear, &nurse.LastEducation, &nurse.UrlImage)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +45,7 @@ func (d *nurseRepository) GetAll() ([]model.Nurses, error) {
 }
 
 func (d *nurseRepository) GetById(id string) (model.Nurses, error) {
-	query := `SELECT * FROM nurses WHERE id = ?`
+	query := `SELECT * FROM nurses WHERE str_num = ?`
 	row, err := d.db.Query(query, id)
 	if err != nil {
 		return model.Nurses{}, err
@@ -54,9 +54,9 @@ func (d *nurseRepository) GetById(id string) (model.Nurses, error) {
 	var nurse model.Nurses
 	for row.Next() {
 		err = row.Scan(&nurse.StrNum, &nurse.UserId, &nurse.CreatedAt, &nurse.UpdatedAt, &nurse.Name,
-			&nurse.POB, &nurse.DOB, &nurse.Gender, &nurse.Married, &nurse.PhoneNum, &nurse.Email,
-			&nurse.Address, &nurse.District, &nurse.City, &nurse.Province, &nurse.EntryYear,
-			&nurse.NurseYear, &nurse.LastEducation, &nurse.UrlImage)
+			&nurse.Competency, &nurse.POB, &nurse.DOB, &nurse.Gender, &nurse.Married, &nurse.PhoneNum,
+			&nurse.Email, &nurse.Address, &nurse.District, &nurse.City, &nurse.Province, &nurse.GraduationYear,
+			&nurse.ExpYear, &nurse.LastEducation, &nurse.UrlImage)
 		if err != nil {
 			return model.Nurses{}, err
 		}
@@ -68,9 +68,9 @@ func (d *nurseRepository) GetById(id string) (model.Nurses, error) {
 func (d *nurseRepository) Create(nurse model.Nurses) error {
 	query := `INSERT INTO nurses VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	_, err := d.db.Exec(query, nurse.StrNum, nurse.UserId, nurse.CreatedAt, nurse.UpdatedAt, nurse.Name,
-		nurse.POB, nurse.DOB, nurse.Gender, nurse.Married, nurse.PhoneNum, nurse.Email,
-		nurse.Address, nurse.District, nurse.City, nurse.Province, nurse.EntryYear,
-		nurse.NurseYear, nurse.LastEducation, nurse.UrlImage, nurse.Specialist)
+		nurse.Competency, nurse.POB, nurse.DOB, nurse.Gender, nurse.Married, nurse.PhoneNum,
+		nurse.Email, nurse.Address, nurse.District, nurse.City, nurse.Province, nurse.GraduationYear,
+		nurse.ExpYear, nurse.LastEducation, nurse.UrlImage)
 	if err != nil {
 		return err
 	}
@@ -79,13 +79,13 @@ func (d *nurseRepository) Create(nurse model.Nurses) error {
 }
 
 func (d *nurseRepository) Update(nurse model.Nurses) error {
-	query := `UPDATE nurses SET str_num = ?, updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, 
-                   phone_num = ?, email = ?, address = ?, district = ?, city = ?, province = ?, entry_year = ?, 
-                   nurse_year = ?, last_education = ?, url_image = ? WHERE user_id = ?`
-	_, err := d.db.Exec(query, nurse.StrNum, nurse.CreatedAt, nurse.UpdatedAt, nurse.Name,
-		nurse.POB, nurse.DOB, nurse.Gender, nurse.Married, nurse.PhoneNum, nurse.Email,
-		nurse.Address, nurse.District, nurse.City, nurse.Province, nurse.EntryYear,
-		nurse.NurseYear, nurse.LastEducation, nurse.UrlImage, nurse.UserId)
+	query := `UPDATE nurses SET updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, 
+                   competency = ?, phone_num = ?, email = ?, address = ?, district = ?, city = ?, province = ?, graduation_year = ?, 
+                   exp_year = ?, last_education = ?, url_image = ? WHERE str_num = ?`
+	_, err := d.db.Exec(query, nurse.UpdatedAt, nurse.Name, nurse.POB, nurse.DOB,
+		nurse.Gender, nurse.Married, nurse.Competency, nurse.PhoneNum, nurse.Email, nurse.Address,
+		nurse.District, nurse.City, nurse.Province, nurse.GraduationYear,
+		nurse.ExpYear, nurse.LastEducation, nurse.UrlImage, nurse.StrNum)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (d *nurseRepository) Update(nurse model.Nurses) error {
 }
 
 func (d *nurseRepository) Delete(id string) error {
-	query := `DELETE FROM nurses WHERE id = ?`
+	query := `DELETE FROM nurses WHERE str_num = ?`
 	_, err := d.db.Exec(query, id)
 	if err != nil {
 		return err

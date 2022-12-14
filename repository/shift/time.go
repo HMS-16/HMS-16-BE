@@ -60,7 +60,7 @@ func (t *timeRepository) GetById(id uint) (model.Times, error) {
 }
 
 func (t *timeRepository) Create(time model.Times) error {
-	query := `INSERT INTO times VALUES (?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO times VALUES (?,?,?,?,?,?)`
 	_, err := t.db.Exec(query, time.ID, time.CreatedAt, time.UpdatedAt, time.DeletedAt, time.Start, time.End)
 	if err != nil {
 		return err

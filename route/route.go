@@ -61,6 +61,12 @@ func Init(e *echo.Echo, db *sql.DB) {
 	}
 
 	middleware.LogMiddleware(e)
+	e.Use(mid.CORSWithConfig(mid.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization,
+			echo.HeaderAcceptEncoding, echo.HeaderXCSRFToken, echo.HeaderContentLength},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+	}))
 	v1 := e.Group("/v1")
 	adminV1 := v1.Group("/admins")
 	adminV1.POST("/signup", adminCtrl.Create)
@@ -120,10 +126,11 @@ func Init(e *echo.Echo, db *sql.DB) {
 	}))
 	doctor.Use(middleware.AuthorizationDoctor)
 	doctor.GET("/all", doctorCtrl.GetAll)
-	doctor.GET("", doctorCtrl.GetById)
+	doctor.GET("/all/cards", doctorCtrl.GetAllCards)
+	doctor.GET("/:id", doctorCtrl.GetById)
 	doctor.POST("", doctorCtrl.Create)
-	doctor.PUT("", doctorCtrl.Update)
-	doctor.DELETE("", doctorCtrl.Delete)
+	doctor.PUT("/:id", doctorCtrl.Update)
+	doctor.DELETE("/:id", doctorCtrl.Delete)
 
 	nurse := v1.Group("/nurses")
 	nurse.Use(mid.JWTWithConfig(mid.JWTConfig{
@@ -132,14 +139,15 @@ func Init(e *echo.Echo, db *sql.DB) {
 	}))
 	nurse.Use(middleware.AuthorizationNurse)
 	nurse.GET("/all", nurseCtrl.GetAll)
-	nurse.GET("", nurseCtrl.GetById)
+	nurse.GET("/all/cards", nurseCtrl.GetAllCards)
+	nurse.GET("/:id", nurseCtrl.GetById)
 	nurse.POST("", nurseCtrl.Create)
-	nurse.PUT("", nurseCtrl.Update)
-	nurse.DELETE("", nurseCtrl.Delete)
+	nurse.PUT("/:id", nurseCtrl.Update)
+	nurse.DELETE("/:id", nurseCtrl.Delete)
 
 	shiftDoctor := doctor.Group("/shifts")
 	shiftDoctor.GET("", shiftCtrl.GetAll)
-	shiftDoctor.GET("/:id", shiftCtrl.GetAllByUserId)
+	shiftDoctor.GET("/all/:id", shiftCtrl.GetAllByUserId)
 	shiftDoctor.GET("/:id", shiftCtrl.GetById)
 	shiftDoctor.POST("", shiftCtrl.Create)
 	shiftDoctor.PUT("/:id", shiftCtrl.Update)
@@ -147,7 +155,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 
 	shiftNurse := nurse.Group("/shifts")
 	shiftNurse.GET("", shiftCtrl.GetAll)
-	shiftNurse.GET("/:id", shiftCtrl.GetAllByUserId)
+	shiftNurse.GET("/all/:id", shiftCtrl.GetAllByUserId)
 	shiftNurse.GET("/:id", shiftCtrl.GetById)
 	shiftNurse.POST("", shiftCtrl.Create)
 	shiftNurse.PUT("/:id", shiftCtrl.Update)
