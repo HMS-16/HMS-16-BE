@@ -61,6 +61,12 @@ func Init(e *echo.Echo, db *sql.DB) {
 	}
 
 	middleware.LogMiddleware(e)
+	e.Use(mid.CORSWithConfig(mid.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization,
+			echo.HeaderAcceptEncoding, echo.HeaderXCSRFToken, echo.HeaderContentLength},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+	}))
 	v1 := e.Group("/v1")
 	adminV1 := v1.Group("/admins")
 	adminV1.POST("/signup", adminCtrl.Create)

@@ -49,8 +49,12 @@ func (a *adminController) Login(c echo.Context) error {
 	c.Bind(&admin)
 
 	adminDB, err := a.admin.Login(admin.Username)
-	if err != nil || !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
-		return c.JSON(http.StatusForbidden, err.Error())
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	if !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	role := "admin"
