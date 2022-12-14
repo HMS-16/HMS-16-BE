@@ -48,7 +48,7 @@ func (t *dayController) Create(c echo.Context) error {
 	c.Bind(&day)
 
 	validate := validator.New()
-	err := validate.Struct(day)
+	err := validate.Struct(&day)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

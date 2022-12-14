@@ -62,7 +62,7 @@ func (s *shiftController) Create(c echo.Context) error {
 	c.Bind(&shift)
 
 	validate := validator.New()
-	err := validate.Struct(shift)
+	err := validate.Struct(&shift)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

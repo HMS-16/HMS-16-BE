@@ -83,7 +83,7 @@ func (s *shiftRepository) GetById(id string) (model.Shifts, error) {
 }
 
 func (s *shiftRepository) Create(shift model.Shifts) error {
-	query := `INSERT INTO shifts VALUES (?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO shifts VALUES (?,?,?,?,?,?,?)`
 	_, err := s.db.Exec(query, shift.ID, shift.CreatedAt, shift.UpdatedAt, shift.DeletedAt, shift.UserId,
 		shift.DayId, shift.TimeId)
 	if err != nil {

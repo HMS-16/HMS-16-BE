@@ -3,7 +3,6 @@ package profile
 import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/profile"
-	"HMS-16-BE/util/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -30,8 +29,19 @@ func (d *doctorController) GetAll(c echo.Context) error {
 	})
 }
 
+func (d *doctorController) GetAllCards(c echo.Context) error {
+	doctors, err := d.doctor.GetAllCards()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    doctors,
+	})
+}
+
 func (d *doctorController) GetById(c echo.Context) error {
-	id := middleware.GetIdJWT(c)
+	id := c.Param("id")
 
 	doctor, err := d.doctor.GetById(id)
 	if err != nil {
@@ -49,7 +59,6 @@ func (d *doctorController) Create(c echo.Context) error {
 	c.Bind(&doctor)
 	doctor.CreatedAt = time.Now()
 	doctor.UpdatedAt = doctor.CreatedAt
-	doctor.UserId = middleware.GetIdJWT(c)
 
 	validate := validator.New()
 	err := validate.Struct(&doctor)
@@ -70,7 +79,7 @@ func (d *doctorController) Create(c echo.Context) error {
 func (d *doctorController) Update(c echo.Context) error {
 	var doctor model.Doctors
 	c.Bind(&doctor)
-	doctor.UserId = middleware.GetIdJWT(c)
+	doctor.StrNum = c.Param("id")
 	doctor.UpdatedAt = time.Now()
 
 	validate := validator.New()
@@ -90,7 +99,7 @@ func (d *doctorController) Update(c echo.Context) error {
 }
 
 func (d *doctorController) Delete(c echo.Context) error {
-	id := middleware.GetIdJWT(c)
+	id := c.Param("id")
 
 	err := d.doctor.Delete(id)
 	if err != nil {
