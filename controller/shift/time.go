@@ -48,7 +48,7 @@ func (t *timeController) Create(c echo.Context) error {
 	c.Bind(&time)
 
 	validate := validator.New()
-	err := validate.Struct(time)
+	err := validate.Struct(&time)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

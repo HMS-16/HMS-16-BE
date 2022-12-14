@@ -32,9 +32,9 @@ func (d *doctorRepository) GetAll() ([]model.Doctors, error) {
 	for row.Next() {
 		var doctor model.Doctors
 		err = row.Scan(&doctor.StrNum, &doctor.UserId, &doctor.CreatedAt, &doctor.UpdatedAt, &doctor.Name,
-			&doctor.POB, &doctor.DOB, &doctor.Gender, &doctor.Married, &doctor.PhoneNum, &doctor.Email,
-			&doctor.Address, &doctor.District, &doctor.City, &doctor.Province, &doctor.EntryYear,
-			&doctor.DoctorYear, &doctor.LastEducation, &doctor.UrlImage)
+			&doctor.Competency, &doctor.POB, &doctor.DOB, &doctor.Gender, &doctor.Married, &doctor.PhoneNum,
+			&doctor.Email, &doctor.Address, &doctor.District, &doctor.City, &doctor.Province, &doctor.GraduationYear,
+			&doctor.ExpYear, &doctor.LastEducation, &doctor.UrlImage)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +45,7 @@ func (d *doctorRepository) GetAll() ([]model.Doctors, error) {
 }
 
 func (d *doctorRepository) GetById(id string) (model.Doctors, error) {
-	query := `SELECT * FROM doctors WHERE id = ?`
+	query := `SELECT * FROM doctors WHERE str_num = ?`
 	row, err := d.db.Query(query, id)
 	if err != nil {
 		return model.Doctors{}, err
@@ -54,9 +54,9 @@ func (d *doctorRepository) GetById(id string) (model.Doctors, error) {
 	var doctor model.Doctors
 	for row.Next() {
 		err = row.Scan(&doctor.StrNum, &doctor.UserId, &doctor.CreatedAt, &doctor.UpdatedAt, &doctor.Name,
-			&doctor.POB, &doctor.DOB, &doctor.Gender, &doctor.Married, &doctor.PhoneNum, &doctor.Email,
-			&doctor.Address, &doctor.District, &doctor.City, &doctor.Province, &doctor.EntryYear,
-			&doctor.DoctorYear, &doctor.LastEducation, &doctor.UrlImage)
+			&doctor.Competency, &doctor.POB, &doctor.DOB, &doctor.Gender, &doctor.Married, &doctor.PhoneNum,
+			&doctor.Email, &doctor.Address, &doctor.District, &doctor.City, &doctor.Province, &doctor.GraduationYear,
+			&doctor.ExpYear, &doctor.LastEducation, &doctor.UrlImage)
 		if err != nil {
 			return model.Doctors{}, err
 		}
@@ -68,9 +68,9 @@ func (d *doctorRepository) GetById(id string) (model.Doctors, error) {
 func (d *doctorRepository) Create(doctor model.Doctors) error {
 	query := `INSERT INTO doctors VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	_, err := d.db.Exec(query, doctor.StrNum, doctor.UserId, doctor.CreatedAt, doctor.UpdatedAt, doctor.Name,
-		doctor.POB, doctor.DOB, doctor.Gender, doctor.Married, doctor.PhoneNum, doctor.Email,
-		doctor.Address, doctor.District, doctor.City, doctor.Province, doctor.EntryYear,
-		doctor.DoctorYear, doctor.LastEducation, doctor.UrlImage, doctor.Specialist)
+		doctor.Competency, doctor.POB, doctor.DOB, doctor.Gender, doctor.Married, doctor.PhoneNum, doctor.Email,
+		doctor.Address, doctor.District, doctor.City, doctor.Province, doctor.GraduationYear,
+		doctor.ExpYear, doctor.LastEducation, doctor.UrlImage)
 	if err != nil {
 		return err
 	}
@@ -79,13 +79,12 @@ func (d *doctorRepository) Create(doctor model.Doctors) error {
 }
 
 func (d *doctorRepository) Update(doctor model.Doctors) error {
-	query := `UPDATE doctors SET str_num = ?, updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, 
-                   phone_num = ?, email = ?, address = ?, district = ?, city = ?, province = ?, entry_year = ?, 
-                   doctor_year = ?, last_education = ?, url_image = ? WHERE user_id = ?`
-	_, err := d.db.Exec(query, doctor.StrNum, doctor.CreatedAt, doctor.UpdatedAt, doctor.Name,
-		doctor.POB, doctor.DOB, doctor.Gender, doctor.Married, doctor.PhoneNum, doctor.Email,
-		doctor.Address, doctor.District, doctor.City, doctor.Province, doctor.EntryYear,
-		doctor.DoctorYear, doctor.LastEducation, doctor.UrlImage, doctor.UserId)
+	query := `UPDATE doctors SET updated_at = ?, name = ?, pob = ?, dob = ?, gender = ?, married = ?, 
+                   competency = ?, phone_num = ?, email = ?, address = ?, district = ?, city = ?, province = ?, graduation_year = ?, 
+                   exp_year = ?, last_education = ?, url_image = ? WHERE str_num = ?`
+	_, err := d.db.Exec(query, doctor.UpdatedAt, doctor.Name, doctor.POB, doctor.DOB, doctor.Gender, doctor.Married,
+		doctor.Competency, doctor.PhoneNum, doctor.Email, doctor.Address, doctor.District, doctor.City, doctor.Province,
+		doctor.GraduationYear, doctor.ExpYear, doctor.LastEducation, doctor.UrlImage, doctor.StrNum)
 	if err != nil {
 		return err
 	}
@@ -94,7 +93,7 @@ func (d *doctorRepository) Update(doctor model.Doctors) error {
 }
 
 func (d *doctorRepository) Delete(id string) error {
-	query := `DELETE FROM doctors WHERE id = ?`
+	query := `DELETE FROM doctors WHERE str_num = ?`
 	_, err := d.db.Exec(query, id)
 	if err != nil {
 		return err

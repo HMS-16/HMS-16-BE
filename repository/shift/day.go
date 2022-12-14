@@ -60,7 +60,7 @@ func (d *dayRepository) GetById(id uint) (model.Days, error) {
 }
 
 func (d *dayRepository) Create(Day model.Days) error {
-	query := `INSERT INTO Days VALUES (?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO Days VALUES (?,?,?,?,?)`
 	_, err := d.db.Exec(query, Day.ID, Day.CreatedAt, Day.UpdatedAt, Day.DeletedAt, Day.Day)
 	if err != nil {
 		return err

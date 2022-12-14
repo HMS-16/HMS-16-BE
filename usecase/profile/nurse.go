@@ -1,13 +1,15 @@
 package profile
 
 import (
+	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
 	"HMS-16-BE/repository/profile"
 )
 
 type NurseUsecase interface {
-	GetAll() ([]model.Nurses, error)
-	GetById(id string) (model.Nurses, error)
+	GetAll() ([]dto.Nurse, error)
+	GetAllCards() ([]dto.NurseCards, error)
+	GetById(id string) (dto.Nurse, error)
 	Create(nurse model.Nurses) error
 	Update(nurse model.Nurses) error
 	Delete(id string) error
@@ -21,14 +23,27 @@ func NewNurseUsecase(n profile.NurseRepository) *nurseUsecase {
 	return &nurseUsecase{n}
 }
 
-func (n *nurseUsecase) GetAll() ([]model.Nurses, error) {
+func (n *nurseUsecase) GetAll() ([]dto.Nurse, error) {
 	nurses, err := n.nurse.GetAll()
-	return nurses, err
+	var nursesDTO []dto.Nurse
+	for _, nurse := range nurses {
+		nursesDTO = append(nursesDTO, *dto.NurseDTO(&nurse))
+	}
+	return nursesDTO, err
 }
 
-func (n *nurseUsecase) GetById(id string) (model.Nurses, error) {
+func (n *nurseUsecase) GetAllCards() ([]dto.NurseCards, error) {
+	nurses, err := n.nurse.GetAll()
+	var nursesDTO []dto.NurseCards
+	for _, nurse := range nurses {
+		nursesDTO = append(nursesDTO, *dto.NurseCardsDTO(&nurse))
+	}
+	return nursesDTO, err
+}
+
+func (n *nurseUsecase) GetById(id string) (dto.Nurse, error) {
 	nurse, err := n.nurse.GetById(id)
-	return nurse, err
+	return *dto.NurseDTO(&nurse), err
 }
 
 func (n *nurseUsecase) Create(nurse model.Nurses) error {
