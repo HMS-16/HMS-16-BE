@@ -7,6 +7,6 @@ type Diagnoses struct {
 	DoctorId     string `json:"doctor_id"`
 	Diagnose     string `json:"diagnose"`
 	Prescription string `json:"prescription"`
-	ScheduleId   string `json:"schedule_id"`
+	ScheduleId   uint   `json:"schedule_id"`
 	Status       bool   `json:"status" gorm:"default:false"`
 }

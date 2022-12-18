@@ -58,3 +58,26 @@ func DayDTO(day *model.Days) *Day {
 		Day: day.Day,
 	}
 }
+
+func TimeShift(id uint) string {
+	arr := []string{
+		"no data",
+		"09.00 - 12.00",
+		"13.00 - 16.00",
+		"18.00 - 21.00",
+	}
+	return arr[id]
+}
+
+func DayShift(name string) uint {
+	arr := map[string]uint{
+		"Monday":    1,
+		"Tuesday":   2,
+		"Wednesday": 3,
+		"Thursday":  4,
+		"Friday":    5,
+		"Saturday":  6,
+		"Sunday":    7,
+	}
+	return arr[name]
+}

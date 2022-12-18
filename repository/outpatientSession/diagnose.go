@@ -8,7 +8,8 @@ import (
 type DiagnoseRepository interface {
 	Create(diagnose model.Diagnoses) error
 	GetAllByPatient(patientId string) ([]model.Diagnoses, error)
-	GetById(id string) (model.Diagnoses, error)
+	GetById(id uint) (model.Diagnoses, error)
+	GetBySchedule(scheduleId uint) (model.Diagnoses, error)
 }
 
 type diagnoseRepository struct {
@@ -53,6 +54,24 @@ func (d *diagnoseRepository) GetAllByPatient(patientId string) ([]model.Diagnose
 func (d *diagnoseRepository) GetById(id string) (model.Diagnoses, error) {
 	query := `SELECT * FROM diagnoses WHERE id = ?`
 	row, err := d.db.Query(query, id)
+	if err != nil {
+		return model.Diagnoses{}, err
+	}
+	var diagnose model.Diagnoses
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&diagnose.ID, &diagnose.CreatedAt, &diagnose.UpdatedAt, &diagnose.DeletedAt,
+			&diagnose.DoctorId, &diagnose.Diagnose, &diagnose.Prescription, &diagnose.ScheduleId, &diagnose.Status)
+		if err != nil {
+			return model.Diagnoses{}, err
+		}
+	}
+	return diagnose, err
+}
+
+func (d *diagnoseRepository) GetBySchedule(scheduleId string) (model.Diagnoses, error) {
+	query := `SELECT * FROM diagnoses WHERE schedule_id = ?`
+	row, err := d.db.Query(query, scheduleId)
 	if err != nil {
 		return model.Diagnoses{}, err
 	}

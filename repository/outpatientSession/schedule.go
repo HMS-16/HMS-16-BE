@@ -10,10 +10,12 @@ type ScheduleRepository interface {
 	GetAllByDay(date string) ([]model.Schedules, error)
 	GetAllByPatient(patientId string) ([]model.Schedules, error)
 	GetAllByDoctor(doctorId string) ([]model.Schedules, error)
-	GetAllById(id string) ([]model.Schedules, error)
+	GetById(id uint) (model.Schedules, error)
 	Update(schedule model.Schedules) error
-	UpdateStatus(id string) error
-	Delete(id string) error
+	UpdateDoctor(schedule model.Schedules) error
+	UpdateNurse(schedule model.Schedules) error
+	UpdateStatus(id uint) error
+	Delete(id uint) error
 }
 
 type scheduleRepository struct {
@@ -25,9 +27,9 @@ func NewScheduleRepository(db *sql.DB) *scheduleRepository {
 }
 
 func (s *scheduleRepository) Create(schedule model.Schedules) error {
-	query := `INSERT INTO schedules VALUES (?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO schedules VALUES (?,?,?,?,?,?,?,?,?,?)`
 	_, err := s.db.Exec(query, schedule.ID, schedule.CreatedAt, schedule.UpdatedAt, schedule.DeletedAt,
-		schedule.PatientId, schedule.DoctorId, schedule.Date, schedule.TimeId)
+		schedule.PatientId, schedule.DoctorId, schedule.NurseId, schedule.Date, schedule.TimeId, schedule.Status)
 	if err != nil {
 		return err
 	}
@@ -45,7 +47,8 @@ func (s *scheduleRepository) GetAllByDay(date string) ([]model.Schedules, error)
 	for row.Next() {
 		var schedule model.Schedules
 		err = row.Scan(&schedule.ID, &schedule.CreatedAt, &schedule.UpdatedAt, &schedule.DeletedAt,
-			&schedule.PatientId, &schedule.DoctorId, &schedule.Date, &schedule.TimeId, &schedule.Status)
+			&schedule.PatientId, &schedule.DoctorId, &schedule.NurseId, &schedule.Date,
+			&schedule.TimeId, &schedule.Status)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +68,8 @@ func (s *scheduleRepository) GetAllByPatient(patientId string) ([]model.Schedule
 	for row.Next() {
 		var schedule model.Schedules
 		err = row.Scan(&schedule.ID, &schedule.CreatedAt, &schedule.UpdatedAt, &schedule.DeletedAt,
-			&schedule.PatientId, &schedule.DoctorId, &schedule.Date, &schedule.TimeId, &schedule.Status)
+			&schedule.PatientId, &schedule.DoctorId, &schedule.NurseId, &schedule.Date,
+			&schedule.TimeId, &schedule.Status)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +89,8 @@ func (s *scheduleRepository) GetAllByDoctor(doctorId string) ([]model.Schedules,
 	for row.Next() {
 		var schedule model.Schedules
 		err = row.Scan(&schedule.ID, &schedule.CreatedAt, &schedule.UpdatedAt, &schedule.DeletedAt,
-			&schedule.PatientId, &schedule.DoctorId, &schedule.Date, &schedule.TimeId, &schedule.Status)
+			&schedule.PatientId, &schedule.DoctorId, &schedule.NurseId, &schedule.Date,
+			&schedule.TimeId, &schedule.Status)
 		if err != nil {
 			return nil, err
 		}
@@ -94,7 +99,7 @@ func (s *scheduleRepository) GetAllByDoctor(doctorId string) ([]model.Schedules,
 	return schedules, nil
 }
 
-func (s *scheduleRepository) GetAllById(id string) (model.Schedules, error) {
+func (s *scheduleRepository) GetById(id uint) (model.Schedules, error) {
 	query := `SELECT * FROM schedules WHERE id = ?`
 	row, err := s.db.Query(query, id)
 	if err != nil {
@@ -104,7 +109,8 @@ func (s *scheduleRepository) GetAllById(id string) (model.Schedules, error) {
 	defer row.Close()
 	for row.Next() {
 		err = row.Scan(&schedule.ID, &schedule.CreatedAt, &schedule.UpdatedAt, &schedule.DeletedAt,
-			&schedule.PatientId, &schedule.DoctorId, &schedule.Date, &schedule.TimeId, &schedule.Status)
+			&schedule.PatientId, &schedule.DoctorId, &schedule.NurseId, &schedule.Date,
+			&schedule.TimeId, &schedule.Status)
 		if err != nil {
 			return model.Schedules{}, err
 		}
@@ -121,7 +127,25 @@ func (s *scheduleRepository) Update(schedule model.Schedules) error {
 	return nil
 }
 
-func (s *scheduleRepository) UpdateStatus(id string) error {
+func (s *scheduleRepository) UpdateDoctor(schedule model.Schedules) error {
+	query := `UPDATE schedule SET doctor_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, schedule.DoctorId, schedule.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *scheduleRepository) UpdateNurse(schedule model.Schedules) error {
+	query := `UPDATE schedule SET nurse_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, schedule.NurseId, schedule.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *scheduleRepository) UpdateStatus(id uint) error {
 	query := `UPDATE schedules SET status = true WHERE id = ?`
 	_, err := s.db.Exec(query, id)
 	if err != nil {
@@ -130,7 +154,7 @@ func (s *scheduleRepository) UpdateStatus(id string) error {
 	return nil
 }
 
-func (s *scheduleRepository) Delete(id string) error {
+func (s *scheduleRepository) Delete(id uint) error {
 	query := `DELETE FROM schedules WHERE id = ?`
 	_, err := s.db.Exec(query, id)
 	if err != nil {

@@ -8,7 +8,8 @@ import (
 type ConditionRepository interface {
 	Create(condition model.Conditions) error
 	GetAllByPatient(patientId string) ([]model.Conditions, error)
-	GetById(id string) (model.Conditions, error)
+	GetById(id uint) (model.Conditions, error)
+	GetBySchedule(scheduleId uint) (model.Conditions, error)
 }
 
 type conditionRepository struct {
@@ -54,9 +55,28 @@ func (c *conditionRepository) GetAllByPatient(patientId string) ([]model.Conditi
 	return conditions, nil
 }
 
-func (s *scheduleRepository) GetById(id string) (model.Conditions, error) {
+func (c *conditionRepository) GetById(id uint) (model.Conditions, error) {
 	query := `SELECT * FROM conditions WHERE id = ?`
-	row, err := s.db.Query(query, id)
+	row, err := c.db.Query(query, id)
+	if err != nil {
+		return model.Conditions{}, err
+	}
+	var condition model.Conditions
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&condition.ID, &condition.CreatedAt, &condition.UpdatedAt, &condition.DeletedAt,
+			&condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
+			&condition.BodyTemperature, &condition.HeartRate, &condition.BreathRate, &condition.Cholesterol,
+			&condition.Note, &condition.ScheduleId, &condition.Status)
+		if err != nil {
+			return model.Conditions{}, err
+		}
+	}
+	return condition, err
+}
+func (c *conditionRepository) GetBySchedule(scheduleId uint) (model.Conditions, error) {
+	query := `SELECT * FROM conditions WHERE schedule_id = ?`
+	row, err := c.db.Query(query, scheduleId)
 	if err != nil {
 		return model.Conditions{}, err
 	}
