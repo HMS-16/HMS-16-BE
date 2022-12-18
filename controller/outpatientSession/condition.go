@@ -3,10 +3,12 @@ package outpatientSession
 import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/outpatientSession"
+	"HMS-16-BE/util/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type conditionController struct {
@@ -20,6 +22,9 @@ func NewConditionController(c outpatientSession.ConditionUsecase) *conditionCont
 func (d *conditionController) Create(c echo.Context) error {
 	var condition model.Conditions
 	c.Bind(&condition)
+	condition.NurseId = middleware.GetIdJWT(c)
+	condition.CreatedAt = time.Now()
+	condition.UpdatedAt = condition.CreatedAt
 
 	validate := validator.New()
 	err := validate.Struct(&condition)

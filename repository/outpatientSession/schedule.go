@@ -119,8 +119,8 @@ func (s *scheduleRepository) GetById(id uint) (model.Schedules, error) {
 }
 
 func (s *scheduleRepository) Update(schedule model.Schedules) error {
-	query := `UPDATE schedules SET date = ?, time_id = ? WHERE id = ?`
-	_, err := s.db.Exec(query, schedule.Date, schedule.TimeId, schedule.ID)
+	query := `UPDATE schedules SET updated_at = ?, date = ?, time_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.Date, schedule.TimeId, schedule.ID)
 	if err != nil {
 		return err
 	}
@@ -128,8 +128,8 @@ func (s *scheduleRepository) Update(schedule model.Schedules) error {
 }
 
 func (s *scheduleRepository) UpdateDoctor(schedule model.Schedules) error {
-	query := `UPDATE schedule SET doctor_id = ? WHERE id = ?`
-	_, err := s.db.Exec(query, schedule.DoctorId, schedule.ID)
+	query := `UPDATE schedule SET updated_at = ?, doctor_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.DoctorId, schedule.ID)
 	if err != nil {
 		return err
 	}
@@ -137,8 +137,8 @@ func (s *scheduleRepository) UpdateDoctor(schedule model.Schedules) error {
 }
 
 func (s *scheduleRepository) UpdateNurse(schedule model.Schedules) error {
-	query := `UPDATE schedule SET nurse_id = ? WHERE id = ?`
-	_, err := s.db.Exec(query, schedule.NurseId, schedule.ID)
+	query := `UPDATE schedule SET updated_at = ?, nurse_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.NurseId, schedule.ID)
 	if err != nil {
 		return err
 	}

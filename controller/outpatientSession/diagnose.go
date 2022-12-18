@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type diagnoseController struct {
@@ -22,6 +23,8 @@ func (d *diagnoseController) Create(c echo.Context) error {
 	var diagnose model.Diagnoses
 	c.Bind(&diagnose)
 	diagnose.DoctorId = middleware.GetIdJWT(c)
+	diagnose.CreatedAt = time.Now()
+	diagnose.UpdatedAt = diagnose.CreatedAt
 
 	validate := validator.New()
 	err := validate.Struct(&diagnose)

@@ -22,7 +22,7 @@ func (s *scheduleController) Create(c echo.Context) error {
 	var schedule model.Schedules
 	c.Bind(&schedule)
 	schedule.CreatedAt = time.Now()
-	schedule.UpdatedAt = time.Now()
+	schedule.UpdatedAt = schedule.CreatedAt
 
 	err := s.schedule.Create(schedule)
 	if err != nil {
