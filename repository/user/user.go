@@ -93,7 +93,7 @@ func (u *userRepository) GetById(id string) (dto.User, error) {
 }
 
 func (u *userRepository) Update(user model.Users) error {
-	query := `UPDATE users SET updated_at = ?, username = ?, email = ? WHERE id = ?`
+	query := `UPDATE users SET updated_at = ?, name = ?, email = ? WHERE id = ?`
 	_, err := u.db.Exec(query, user.UpdatedAt, user.Username, user.Email, user.Id)
 	if err != nil {
 		return err
