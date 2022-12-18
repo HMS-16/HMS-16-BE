@@ -7,7 +7,7 @@ import (
 
 func LogMiddleware(c *echo.Echo) {
 	c.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}" +
-			"time_unix=${time_unix}, user_agent=${user_agent}" + "\n",
+		Format: "method=${method}, uri=${uri}, status=${status}, " +
+			"time=${time}, user_agent=${user_agent}" + "\n",
 	}))
 }

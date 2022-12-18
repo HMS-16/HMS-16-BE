@@ -13,7 +13,6 @@ type UserRepository interface {
 	GetById(id string) (dto.User, error)
 	Update(user model.Users) error
 	Delete(id string) error
-	GetDoctorByRole(role int) (model.Users, error)
 }
 
 type userRepository struct {

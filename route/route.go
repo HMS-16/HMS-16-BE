@@ -3,16 +3,19 @@ package route
 import (
 	"HMS-16-BE/config"
 	adminctrl "HMS-16-BE/controller/admin"
+	"HMS-16-BE/controller/outpatientSession"
 	patientctrl "HMS-16-BE/controller/patient"
 	profilectrl "HMS-16-BE/controller/profile"
 	shiftctrl "HMS-16-BE/controller/shift"
 	userctrl "HMS-16-BE/controller/user"
 	adminrepo "HMS-16-BE/repository/admin"
+	outpatientSessionrepo "HMS-16-BE/repository/outpatientSession"
 	patientrepo "HMS-16-BE/repository/patient"
 	profilerepo "HMS-16-BE/repository/profile"
 	shiftrepo "HMS-16-BE/repository/shift"
 	userrepo "HMS-16-BE/repository/user"
 	adminuc "HMS-16-BE/usecase/admin"
+	outpatientSessionuc "HMS-16-BE/usecase/outpatientSession"
 	patientuc "HMS-16-BE/usecase/patient"
 	profileuc "HMS-16-BE/usecase/profile"
 	shiftuc "HMS-16-BE/usecase/shift"
@@ -34,6 +37,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	shiftRepo := shiftrepo.NewShiftRepository(db)
 	timeRepo := shiftrepo.NewTimeRepository(db)
 	dayRepo := shiftrepo.NewDayRepository(db)
+	scheduleRepo := outpatientSessionrepo.NewScheduleRepository(db)
+	conditionRepo := outpatientSessionrepo.NewConditionRepository(db)
+	diagnoseRepo := outpatientSessionrepo.NewDiagnoseRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
 	userUC := useruc.NewUserUsecase(userRepo)
@@ -44,6 +50,10 @@ func Init(e *echo.Echo, db *sql.DB) {
 	shiftUC := shiftuc.NewShiftUsecase(shiftRepo, dayRepo, timeRepo)
 	timeUC := shiftuc.NewtimeUsecase(timeRepo)
 	dayUC := shiftuc.NewDayUsecase(dayRepo)
+	scheduleUC := outpatientSessionuc.NewScheduleUsecase(scheduleRepo, conditionRepo, diagnoseRepo, patientRepo,
+		userRepo, shiftRepo)
+	conditionUC := outpatientSessionuc.NewConditionUsecase(conditionRepo, scheduleRepo, userRepo)
+	diagnoseUC := outpatientSessionuc.NewDiagnoseUseCase(diagnoseRepo, scheduleRepo, userRepo)
 
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
@@ -54,6 +64,9 @@ func Init(e *echo.Echo, db *sql.DB) {
 	shiftCtrl := shiftctrl.NewShiftController(shiftUC)
 	timeCtrl := shiftctrl.NewTimeController(timeUC)
 	dayCtrl := shiftctrl.NewDayController(dayUC)
+	scheduleCtrl := outpatientSession.NewScheduleController(scheduleUC)
+	conditionCtrl := outpatientSession.NewConditionController(conditionUC)
+	diagnoseCtrl := outpatientSession.NewDiagnoseController(diagnoseUC)
 
 	secretJWT := os.Getenv("JWT_SECRET_KEY")
 	if secretJWT == "" {
@@ -174,4 +187,40 @@ func Init(e *echo.Echo, db *sql.DB) {
 	day.POST("", dayCtrl.Create)
 	day.PUT("/:id", dayCtrl.Update)
 	day.DELETE("/:id", dayCtrl.Delete)
+
+	appointment := e.Group("/v1/appointment")
+	appointment.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(secretJWT),
+		ContextKey: "jwt-token",
+	}))
+	appointmentAdmin := appointment.Group("")
+	appointmentAdmin.Use(middleware.AuthorizationAdmin)
+	appointmentAdmin.POST("", scheduleCtrl.Create)
+	appointment.GET("", scheduleCtrl.GetAllByDay)
+	appointment.GET("/cards", scheduleCtrl.GetAllCardByDay)
+	appointment.GET("/:id", scheduleCtrl.GetByScheduleId)
+	appointment.GET("/patient/:id", scheduleCtrl.GetDetailByPatient)
+	appointment.PUT("/change/:id", scheduleCtrl.Update)
+	appointment.PUT("/change/doctor/:id", scheduleCtrl.UpdateDoctor)
+	appointment.PUT("/change/nurse/:id", scheduleCtrl.UpdateNurse)
+	appointment.PUT("/change/status/:id", scheduleCtrl.UpdateStatus)
+	appointment.DELETE("/:id", scheduleCtrl.Delete)
+
+	condition := e.Group("/v1/condition")
+	condition.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(secretJWT),
+		ContextKey: "jwt-token",
+	}))
+	condition.Use(middleware.AuthorizationNurse)
+	condition.POST("", conditionCtrl.Create)
+	condition.GET("/:id", conditionCtrl.GetById)
+
+	diagnose := e.Group("/v1/diagnose")
+	diagnose.Use(mid.JWTWithConfig(mid.JWTConfig{
+		SigningKey: []byte(secretJWT),
+		ContextKey: "jwt-token",
+	}))
+	diagnose.Use(middleware.AuthorizationDoctor)
+	diagnose.POST("", diagnoseCtrl.Create)
+	diagnose.GET("/:id", diagnoseCtrl.GetById)
 }

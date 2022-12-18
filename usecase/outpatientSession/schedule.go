@@ -45,7 +45,7 @@ func NewScheduleUsecase(
 }
 
 func (s *scheduleUsecase) Create(schedule model.Schedules) error {
-	date, err := time.Parse(time.RFC850, schedule.Date)
+	date, err := time.Parse("01/02/2006", schedule.Date)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (s *scheduleUsecase) Create(schedule model.Schedules) error {
 
 }
 
-func (s *scheduleUsecase) GetAllCardByDate(date string) ([]dto.SchedulePatientCards, error) {
+func (s *scheduleUsecase) GetAllCardByDay(date string) ([]dto.SchedulePatientCards, error) {
 	schedules, err := s.schedule.GetAllByDay(date)
 	if err != nil {
 		return nil, err

@@ -84,8 +84,8 @@ func (s *shiftRepository) GetById(id string) (model.Shifts, error) {
 }
 
 func (s *shiftRepository) GetIdByShift(date, time uint) ([]string, error) {
-	query := `SELECT user_id FROM shifts WHERE day_id = ?, time_id = ?`
-	row, err := s.db.Query(query)
+	query := `SELECT user_id FROM shifts WHERE day_id = ? AND time_id = ?`
+	row, err := s.db.Query(query, date, time)
 	if err != nil {
 		return nil, err
 	}

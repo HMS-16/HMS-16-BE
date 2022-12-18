@@ -12,7 +12,7 @@ type Diagnose struct {
 	Name         string `json:"name"`
 	Diagnose     string `json:"diagnose"`
 	Prescription string `json:"prescription"`
-	ScheduleId   string `json:"schedule_id"`
+	ScheduleId   uint   `json:"schedule_id"`
 	Time         string `json:"time"`
 	Status       bool   `json:"status"`
 }

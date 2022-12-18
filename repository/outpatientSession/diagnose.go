@@ -51,7 +51,7 @@ func (d *diagnoseRepository) GetAllByPatient(patientId string) ([]model.Diagnose
 	return diagnoses, nil
 }
 
-func (d *diagnoseRepository) GetById(id string) (model.Diagnoses, error) {
+func (d *diagnoseRepository) GetById(id uint) (model.Diagnoses, error) {
 	query := `SELECT * FROM diagnoses WHERE id = ?`
 	row, err := d.db.Query(query, id)
 	if err != nil {
@@ -69,7 +69,7 @@ func (d *diagnoseRepository) GetById(id string) (model.Diagnoses, error) {
 	return diagnose, err
 }
 
-func (d *diagnoseRepository) GetBySchedule(scheduleId string) (model.Diagnoses, error) {
+func (d *diagnoseRepository) GetBySchedule(scheduleId uint) (model.Diagnoses, error) {
 	query := `SELECT * FROM diagnoses WHERE schedule_id = ?`
 	row, err := d.db.Query(query, scheduleId)
 	if err != nil {
