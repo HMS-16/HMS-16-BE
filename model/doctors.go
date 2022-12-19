@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Doctors struct {
-	StrNum         string    `json:"strNum" validate:"required" gorm:"unique"`
+	StrNum         string    `json:"str_num" validate:"required" gorm:"unique"`
 	UserId         string    `json:"user_id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
