@@ -94,8 +94,8 @@ func (s *shiftRepository) Create(shift model.Shifts) error {
 }
 
 func (s *shiftRepository) Update(shift model.Shifts) error {
-	query := `UPDATE shifts SET user_id = ?, day_id = ?, time_id = ? WHERE id = ?`
-	_, err := s.db.Exec(query, shift.UserId, shift.DayId, shift.TimeId, shift.ID)
+	query := `UPDATE shifts SET updated = ?, user_id = ?, day_id = ?, time_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, shift.UpdatedAt, shift.UserId, shift.DayId, shift.TimeId, shift.ID)
 	if err != nil {
 		return err
 	}

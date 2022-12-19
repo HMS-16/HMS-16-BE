@@ -28,7 +28,6 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminRepo := adminrepo.NewAdminRepository(db)
 	userRepo := userrepo.NewUserRepository(db)
 	patientRepo := patientrepo.NewPatientRepository(db)
-	guardianRepo := patientrepo.NewGuardianRepository(db)
 	doctorRepo := profilerepo.NewDoctorRepository(db)
 	nurseRepo := profilerepo.NewNurseRepository(db)
 	shiftRepo := shiftrepo.NewShiftRepository(db)
@@ -36,9 +35,8 @@ func Init(e *echo.Echo, db *sql.DB) {
 	dayRepo := shiftrepo.NewDayRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
-	userUC := useruc.NewUserUsecase(userRepo, doctorRepo, nurseRepo)
-	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
-	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
+	userUC := useruc.NewUserUsecase(userRepo)
+	patientUC := patientuc.NewPatientUsecase(patientRepo)
 	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)
 	nurseUC := profileuc.NewNurseUsecase(nurseRepo)
 	shiftUC := shiftuc.NewShiftUsecase(shiftRepo, dayRepo, timeRepo)
@@ -48,7 +46,6 @@ func Init(e *echo.Echo, db *sql.DB) {
 	adminCtrl := adminctrl.NewAdminController(adminUC)
 	userCtrl := userctrl.NewUserController(userUC)
 	patientCtrl := patientctrl.NewPatientController(patientUC)
-	guardianCtrl := patientctrl.NewGuardianController(guardianUC)
 	doctorCtrl := profilectrl.NewDoctorController(doctorUC)
 	nurseCtrl := profilectrl.NewNurseController(nurseUC)
 	shiftCtrl := shiftctrl.NewShiftController(shiftUC)
@@ -111,13 +108,6 @@ func Init(e *echo.Echo, db *sql.DB) {
 	patients.GET("/cards", patientCtrl.GetAllCards)
 	patients.GET("/:id", patientCtrl.GetById)
 	patients.PUT("/endcase/:id", patientCtrl.UpdateEndCase) //id patient
-
-	guardian := patients.Group("/guardians")
-	guardian.GET("", guardianCtrl.GetAll)
-	guardian.GET("/:id", guardianCtrl.GetById)   //id = guardian id
-	guardian.POST("/:id", guardianCtrl.Create)   //id = patient id
-	guardian.PUT("/:id", guardianCtrl.Update)    //guardian id
-	guardian.DELETE("/:id", guardianCtrl.Delete) //guardian id
 
 	doctor := v1.Group("/doctors")
 	doctor.Use(mid.JWTWithConfig(mid.JWTConfig{

@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type shiftController struct {
@@ -60,6 +61,8 @@ func (s *shiftController) GetById(c echo.Context) error {
 func (s *shiftController) Create(c echo.Context) error {
 	var shift model.Shifts
 	c.Bind(&shift)
+	shift.CreatedAt = time.Now()
+	shift.UpdatedAt = shift.CreatedAt
 
 	validate := validator.New()
 	err := validate.Struct(&shift)
@@ -82,6 +85,7 @@ func (s *shiftController) Update(c echo.Context) error {
 	var shift model.Shifts
 	c.Bind(&shift)
 	shift.ID = uint(id)
+	shift.UpdatedAt = time.Now()
 
 	err := s.shift.Update(shift)
 	if err != nil {
