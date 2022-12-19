@@ -70,8 +70,8 @@ func (d *dayRepository) Create(Day model.Days) error {
 }
 
 func (d *dayRepository) Update(Day model.Days) error {
-	query := `UPDATE Days SET day = ? WHERE id = ?`
-	_, err := d.db.Exec(query, Day.Day, Day.ID)
+	query := `UPDATE Days SET updated_at = ?, day = ? WHERE id = ?`
+	_, err := d.db.Exec(query, Day.UpdatedAt, Day.Day, Day.ID)
 	if err != nil {
 		return err
 	}
