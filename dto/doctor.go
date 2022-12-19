@@ -26,6 +26,9 @@ type Doctor struct {
 	GraduationYear int    `json:"graduation_year" validate:"required"`
 	ExpYear        string `json:"exp_year" validate:"required"`
 	Address        string `json:"address" validate:"required"`
+	District       string `json:"district" validate:"required"`
+	City           string `json:"city" validate:"required"`
+	Province       string `json:"province" validate:"required"`
 	UrlImage       string `json:"url_image"`
 	UserId         string `json:"user_id"`
 }
@@ -45,7 +48,10 @@ func DoctorDTO(d *model.Doctors) *Doctor {
 		LastEducation:  d.LastEducation,
 		GraduationYear: d.GraduationYear,
 		ExpYear:        strings.Join([]string{strconv.Itoa(d.ExpYear), "year"}, " "),
-		Address:        strings.Join([]string{d.Address, d.District, d.City, d.Province}, ", "),
+		Address:        d.Address,
+		District:       d.District,
+		City:           d.City,
+		Province:       d.Province,
 		UrlImage:       d.UrlImage,
 	}
 }
