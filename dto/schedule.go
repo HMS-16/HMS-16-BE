@@ -9,7 +9,7 @@ type SchedulePatient struct {
 }
 
 type SchedulePatientCards struct {
-	PatientId       string `json:"patient_id"`
+	Id              uint   `json:"id"`
 	Date            string `json:"date"`
 	Shift           string `json:"shift"`
 	NoMedicalRecord string `json:"no_medical_record"`
@@ -19,6 +19,7 @@ type SchedulePatientCards struct {
 }
 
 type SchedulePatientInUser struct {
+	Id        uint   `json:"id"`
 	PatientId string `json:"patient_id"`
 	Date      string `json:"date"`
 	Shift     string `json:"shift"`
@@ -31,7 +32,7 @@ type SchedulePatientInUser struct {
 type PatientDetail struct {
 	PatientId string            `json:"patient_id"`
 	Patient   model.Patients    `json:"patient"`
-	Schedule  []SchedulePatient `json:"schedule"`
+	Medical   []SchedulePatient `json:"medical"`
 	Status    string            `json:"status"`
 }
 
@@ -45,7 +46,7 @@ func StatusSchedule(status bool) string {
 
 func SchedulePatientCardsDTO(s *model.Schedules, p *model.Patients, d *User) *SchedulePatientCards {
 	return &SchedulePatientCards{
-		PatientId:       p.Id,
+		Id:              s.ID,
 		Date:            s.Date,
 		Shift:           TimeShift(s.TimeId),
 		NoMedicalRecord: p.Id,
@@ -57,6 +58,7 @@ func SchedulePatientCardsDTO(s *model.Schedules, p *model.Patients, d *User) *Sc
 
 func SchedulePatientInUserDTO(s *model.Schedules, p *model.Patients, d, n *User) *SchedulePatientInUser {
 	return &SchedulePatientInUser{
+		Id:        s.ID,
 		PatientId: p.Id,
 		Date:      s.Date,
 		Shift:     TimeShift(s.TimeId),
@@ -71,7 +73,7 @@ func PatientDetailDTO(p *model.Patients, sp *[]SchedulePatient) *PatientDetail {
 	return &PatientDetail{
 		PatientId: p.Id,
 		Patient:   *p,
-		Schedule:  *sp,
+		Medical:   *sp,
 		Status:    StatusSchedule(p.Status),
 	}
 }

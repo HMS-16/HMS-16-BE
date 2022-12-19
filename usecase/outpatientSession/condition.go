@@ -5,10 +5,11 @@ import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/repository/outpatientSession"
 	"HMS-16-BE/repository/user"
+	"github.com/go-playground/validator/v10"
 )
 
 type ConditionUsecase interface {
-	Create(condition model.Conditions) error
+	Create(condition model.Conditions, patientId string) error
 	GetById(id uint) (dto.Condition, error)
 }
 
@@ -23,7 +24,21 @@ func NewConditionUsecase(c outpatientSession.ConditionRepository, s outpatientSe
 	return &conditionUsecase{c, s, u}
 }
 
-func (c *conditionUsecase) Create(condition model.Conditions) error {
+func (c *conditionUsecase) Create(condition model.Conditions, patientId string) error {
+	date := condition.CreatedAt.Format("01/02/2006")
+
+	var err error
+	condition.ScheduleId, err = c.schedule.GetIdByPatient(patientId, date)
+	if err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	err = validate.Struct(&condition)
+	if err != nil {
+		return err
+	}
+
 	return c.condition.Create(condition)
 }
 

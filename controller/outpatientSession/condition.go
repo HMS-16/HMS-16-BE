@@ -4,7 +4,6 @@ import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/outpatientSession"
 	"HMS-16-BE/util/middleware"
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -20,19 +19,14 @@ func NewConditionController(c outpatientSession.ConditionUsecase) *conditionCont
 }
 
 func (d *conditionController) Create(c echo.Context) error {
+	patientId := c.Param("id")
 	var condition model.Conditions
 	c.Bind(&condition)
 	condition.NurseId = middleware.GetIdJWT(c)
 	condition.CreatedAt = time.Now()
 	condition.UpdatedAt = condition.CreatedAt
 
-	validate := validator.New()
-	err := validate.Struct(&condition)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-
-	err = d.condition.Create(condition)
+	err := d.condition.Create(condition, patientId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

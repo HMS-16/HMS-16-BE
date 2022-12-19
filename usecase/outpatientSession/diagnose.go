@@ -5,10 +5,11 @@ import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/repository/outpatientSession"
 	"HMS-16-BE/repository/user"
+	"github.com/go-playground/validator/v10"
 )
 
 type DiagnoseUsecase interface {
-	Create(diagnose model.Diagnoses) error
+	Create(diagnose model.Diagnoses, patientId string) error
 	GetById(id uint) (dto.Diagnose, error)
 }
 
@@ -23,7 +24,20 @@ func NewDiagnoseUseCase(d outpatientSession.DiagnoseRepository, s outpatientSess
 	return &diagnoseUsecase{d, s, u}
 }
 
-func (d *diagnoseUsecase) Create(diagnose model.Diagnoses) error {
+func (d *diagnoseUsecase) Create(diagnose model.Diagnoses, patientId string) error {
+	date := diagnose.CreatedAt.Format("01/02/2006")
+
+	var err error
+	diagnose.ScheduleId, err = d.schedule.GetIdByPatient(patientId, date)
+	if err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	err = validate.Struct(&diagnose)
+	if err != nil {
+		return err
+	}
 	return d.diagnose.Create(diagnose)
 }
 

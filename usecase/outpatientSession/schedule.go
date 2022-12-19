@@ -7,6 +7,7 @@ import (
 	"HMS-16-BE/repository/patient"
 	"HMS-16-BE/repository/shift"
 	"HMS-16-BE/repository/user"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"time"
 )
@@ -52,6 +53,7 @@ func (s *scheduleUsecase) Create(schedule model.Schedules) error {
 	day := date.Weekday().String()
 	dayId := dto.DayShift(day)
 	usersId, err := s.shift.GetIdByShift(dayId, schedule.TimeId)
+	fmt.Println(day, dayId, usersId)
 	if err != nil {
 		return err
 	}
@@ -61,10 +63,11 @@ func (s *scheduleUsecase) Create(schedule model.Schedules) error {
 			return err
 		}
 		if user.Role == 1 {
-			schedule.DoctorId = user.Id
+			schedule.DoctorId = user.StrNum
 		} else if user.Role == 2 {
-			schedule.NurseId = user.Id
+			schedule.NurseId = user.StrNum
 		}
+		fmt.Println(user, schedule.DoctorId, schedule.NurseId)
 	}
 	validate := validator.New()
 	err = validate.Struct(&schedule)

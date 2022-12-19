@@ -3,7 +3,6 @@ package outpatientSession
 import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/outpatientSession"
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -54,7 +53,7 @@ func (s *scheduleController) GetAllCardByDay(c echo.Context) error {
 func (s *scheduleController) GetAllByDay(c echo.Context) error {
 	date := c.QueryParam("date")
 	if date == "" {
-		date = time.Now().Format("01/02//2006")
+		date = time.Now().Format("01/02/2006")
 	}
 
 	schedules, err := s.schedule.GetAllByDay(date)
@@ -109,12 +108,6 @@ func (s *scheduleController) Update(c echo.Context) error {
 	schedule.ID = uint(id)
 	schedule.UpdatedAt = time.Now()
 
-	validate := validator.New()
-	err = validate.Struct(&schedule)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-
 	err = s.schedule.Update(schedule)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
@@ -135,12 +128,6 @@ func (s *scheduleController) UpdateDoctor(c echo.Context) error {
 	schedule.ID = uint(id)
 	schedule.UpdatedAt = time.Now()
 
-	validate := validator.New()
-	err = validate.Struct(&schedule)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-
 	err = s.schedule.UpdateDoctor(schedule)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
@@ -160,12 +147,6 @@ func (s *scheduleController) UpdateNurse(c echo.Context) error {
 	c.Bind(&schedule)
 	schedule.ID = uint(id)
 	schedule.UpdatedAt = time.Now()
-
-	validate := validator.New()
-	err = validate.Struct(&schedule)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
 
 	err = s.schedule.UpdateNurse(schedule)
 	if err != nil {

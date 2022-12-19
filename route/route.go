@@ -41,7 +41,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	diagnoseRepo := outpatientSessionrepo.NewDiagnoseRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
-	userUC := useruc.NewUserUsecase(userRepo)
+	userUC := useruc.NewUserUsecase(userRepo, doctorRepo, nurseRepo)
 	patientUC := patientuc.NewPatientUsecase(patientRepo)
 	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)
 	nurseUC := profileuc.NewNurseUsecase(nurseRepo)
@@ -186,31 +186,31 @@ func Init(e *echo.Echo, db *sql.DB) {
 	appointmentAdmin := appointment.Group("")
 	appointmentAdmin.Use(middleware.AuthorizationAdmin)
 	appointmentAdmin.POST("", scheduleCtrl.Create)
-	appointment.GET("", scheduleCtrl.GetAllByDay)
-	appointment.GET("/cards", scheduleCtrl.GetAllCardByDay)
+	appointment.GET("/all", scheduleCtrl.GetAllByDay)
+	appointment.GET("/all/cards", scheduleCtrl.GetAllCardByDay)
 	appointment.GET("/:id", scheduleCtrl.GetByScheduleId)
 	appointment.GET("/patient/:id", scheduleCtrl.GetDetailByPatient)
-	appointment.PUT("/change/:id", scheduleCtrl.Update)
 	appointment.PUT("/change/doctor/:id", scheduleCtrl.UpdateDoctor)
 	appointment.PUT("/change/nurse/:id", scheduleCtrl.UpdateNurse)
 	appointment.PUT("/change/status/:id", scheduleCtrl.UpdateStatus)
+	appointment.PUT("/change/date/:id", scheduleCtrl.Update)
 	appointment.DELETE("/:id", scheduleCtrl.Delete)
 
-	condition := e.Group("/v1/condition")
+	condition := e.Group("/v1/conditions")
 	condition.Use(mid.JWTWithConfig(mid.JWTConfig{
 		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
 	condition.Use(middleware.AuthorizationNurse)
-	condition.POST("", conditionCtrl.Create)
+	condition.POST("/:id", conditionCtrl.Create) //patientid
 	condition.GET("/:id", conditionCtrl.GetById)
 
-	diagnose := e.Group("/v1/diagnose")
+	diagnose := e.Group("/v1/diagnoses")
 	diagnose.Use(mid.JWTWithConfig(mid.JWTConfig{
 		SigningKey: []byte(secretJWT),
 		ContextKey: "jwt-token",
 	}))
 	diagnose.Use(middleware.AuthorizationDoctor)
-	diagnose.POST("", diagnoseCtrl.Create)
+	diagnose.POST("/:id", diagnoseCtrl.Create) //patientid
 	diagnose.GET("/:id", diagnoseCtrl.GetById)
 }

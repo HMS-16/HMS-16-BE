@@ -44,7 +44,7 @@ func (c *conditionRepository) GetAllByPatient(patientId string) ([]model.Conditi
 	for row.Next() {
 		var condition model.Conditions
 		err = row.Scan(&condition.ID, &condition.CreatedAt, &condition.UpdatedAt, &condition.DeletedAt,
-			&condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
+			&condition.NurseId, &condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
 			&condition.BodyTemperature, &condition.HeartRate, &condition.BreathRate, &condition.Cholesterol,
 			&condition.Note, &condition.ScheduleId, &condition.Status)
 		if err != nil {
@@ -65,7 +65,7 @@ func (c *conditionRepository) GetById(id uint) (model.Conditions, error) {
 	defer row.Close()
 	for row.Next() {
 		err = row.Scan(&condition.ID, &condition.CreatedAt, &condition.UpdatedAt, &condition.DeletedAt,
-			&condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
+			&condition.NurseId, &condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
 			&condition.BodyTemperature, &condition.HeartRate, &condition.BreathRate, &condition.Cholesterol,
 			&condition.Note, &condition.ScheduleId, &condition.Status)
 		if err != nil {
@@ -84,7 +84,7 @@ func (c *conditionRepository) GetBySchedule(scheduleId uint) (model.Conditions, 
 	defer row.Close()
 	for row.Next() {
 		err = row.Scan(&condition.ID, &condition.CreatedAt, &condition.UpdatedAt, &condition.DeletedAt,
-			&condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
+			&condition.NurseId, &condition.Height, &condition.Weight, &condition.BloodPressure, &condition.SugarAnalysis,
 			&condition.BodyTemperature, &condition.HeartRate, &condition.BreathRate, &condition.Cholesterol,
 			&condition.Note, &condition.ScheduleId, &condition.Status)
 		if err != nil {

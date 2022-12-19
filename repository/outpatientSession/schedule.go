@@ -11,6 +11,7 @@ type ScheduleRepository interface {
 	GetAllByPatient(patientId string) ([]model.Schedules, error)
 	GetAllByDoctor(doctorId string) ([]model.Schedules, error)
 	GetById(id uint) (model.Schedules, error)
+	GetIdByPatient(patientId, date string) (uint, error)
 	Update(schedule model.Schedules) error
 	UpdateDoctor(schedule model.Schedules) error
 	UpdateNurse(schedule model.Schedules) error
@@ -118,6 +119,23 @@ func (s *scheduleRepository) GetById(id uint) (model.Schedules, error) {
 	return schedule, nil
 }
 
+func (s *scheduleRepository) GetIdByPatient(patientId, date string) (uint, error) {
+	query := `SELECT id FROM schedules WHERE patient_id = ? AND date = ?`
+	row, err := s.db.Query(query, patientId, date)
+	if err != nil {
+		return 0, err
+	}
+	var id uint
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&id)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return id, nil
+}
+
 func (s *scheduleRepository) Update(schedule model.Schedules) error {
 	query := `UPDATE schedules SET updated_at = ?, date = ?, time_id = ? WHERE id = ?`
 	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.Date, schedule.TimeId, schedule.ID)
@@ -128,7 +146,7 @@ func (s *scheduleRepository) Update(schedule model.Schedules) error {
 }
 
 func (s *scheduleRepository) UpdateDoctor(schedule model.Schedules) error {
-	query := `UPDATE schedule SET updated_at = ?, doctor_id = ? WHERE id = ?`
+	query := `UPDATE schedules SET updated_at = ?, doctor_id = ? WHERE id = ?`
 	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.DoctorId, schedule.ID)
 	if err != nil {
 		return err
@@ -137,7 +155,7 @@ func (s *scheduleRepository) UpdateDoctor(schedule model.Schedules) error {
 }
 
 func (s *scheduleRepository) UpdateNurse(schedule model.Schedules) error {
-	query := `UPDATE schedule SET updated_at = ?, nurse_id = ? WHERE id = ?`
+	query := `UPDATE schedules SET updated_at = ?, nurse_id = ? WHERE id = ?`
 	_, err := s.db.Exec(query, schedule.UpdatedAt, schedule.NurseId, schedule.ID)
 	if err != nil {
 		return err
