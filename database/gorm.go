@@ -53,5 +53,8 @@ func InitGorm() {
 		&model.Shifts{},
 		&model.Times{},
 		&model.Days{},
+		&model.Schedules{},
+		&model.Conditions{},
+		&model.Diagnoses{},
 	)
 }

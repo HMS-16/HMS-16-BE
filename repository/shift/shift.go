@@ -9,6 +9,7 @@ type ShiftRepository interface {
 	GetAllUserId() ([]string, error)
 	GetAllByUserId(id string) ([]model.Shifts, error)
 	GetById(id string) (model.Shifts, error)
+	GetIdByShift(date, time uint) ([]string, error)
 	Create(shift model.Shifts) error
 	Update(shift model.Shifts) error
 	Delete(id string) error
@@ -80,6 +81,25 @@ func (s *shiftRepository) GetById(id string) (model.Shifts, error) {
 	}
 
 	return shift, nil
+}
+
+func (s *shiftRepository) GetIdByShift(date, time uint) ([]string, error) {
+	query := `SELECT user_id FROM shifts WHERE day_id = ? AND time_id = ?`
+	row, err := s.db.Query(query, date, time)
+	if err != nil {
+		return nil, err
+	}
+	var users []string
+	defer row.Close()
+	for row.Next() {
+		var user string
+		err = row.Scan(&user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
 }
 
 func (s *shiftRepository) Create(shift model.Shifts) error {
