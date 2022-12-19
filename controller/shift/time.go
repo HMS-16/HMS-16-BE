@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type timeController struct {
@@ -44,16 +45,18 @@ func (t *timeController) GetById(c echo.Context) error {
 }
 
 func (t *timeController) Create(c echo.Context) error {
-	var time model.Times
-	c.Bind(&time)
+	var times model.Times
+	c.Bind(&times)
+	times.CreatedAt = time.Now()
+	times.UpdatedAt = times.CreatedAt
 
 	validate := validator.New()
-	err := validate.Struct(&time)
+	err := validate.Struct(&times)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	err = t.time.Create(time)
+	err = t.time.Create(times)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -65,11 +68,12 @@ func (t *timeController) Create(c echo.Context) error {
 
 func (t *timeController) Update(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	var time model.Times
-	c.Bind(&time)
-	time.ID = uint(id)
+	var times model.Times
+	c.Bind(&times)
+	times.ID = uint(id)
+	times.UpdatedAt = time.Now()
 
-	err := t.time.Update(time)
+	err := t.time.Update(times)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
