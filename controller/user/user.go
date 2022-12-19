@@ -58,7 +58,7 @@ func (u *userController) Login(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, err.Error())
 	}
 
-	token, _ := middleware.CreateToken(user.Id, user.Email, dto.Role[user.Role])
+	token, _ := middleware.CreateToken(user.STRNum, user.Email, dto.Role[user.Role])
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
@@ -99,7 +99,7 @@ func (u *userController) Update(c echo.Context) error {
 	user.UpdatedAt = time.Now()
 
 	id := c.Param("id")
-	user.Id = id
+	user.STRNum = id
 
 	err := u.user.Update(user)
 	if err != nil {

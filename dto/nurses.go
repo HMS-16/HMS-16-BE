@@ -26,6 +26,9 @@ type Nurse struct {
 	LastEducation  string `json:"last_education" validate:"required"`
 	GraduationYear int    `json:"graduation_year" validate:"required"`
 	ExpYear        string `json:"exp_year" validate:"required"`
+	District       string `json:"district" validate:"required"`
+	City           string `json:"city" validate:"required"`
+	Province       string `json:"province" validate:"required"`
 	Address        string `json:"address" validate:"required"`
 	UrlImage       string `json:"url_image"`
 }
@@ -45,7 +48,10 @@ func NurseDTO(d *model.Nurses) *Nurse {
 		LastEducation:  d.LastEducation,
 		GraduationYear: d.GraduationYear,
 		ExpYear:        strings.Join([]string{strconv.Itoa(d.ExpYear), "year"}, " "),
-		Address:        strings.Join([]string{d.Address, d.District, d.City, d.Province}, ", "),
+		Address:        d.Address,
+		District:       d.District,
+		City:           d.City,
+		Province:       d.Province,
 		UrlImage:       d.UrlImage,
 	}
 }

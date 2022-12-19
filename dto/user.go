@@ -6,17 +6,17 @@ import (
 )
 
 type User struct {
-	Id        string    `json:"id"`
+	StrNum    string    `json:"str_num"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"username"`
+	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Role      int       `json:"role"`
 }
 
 func UserDTO(user *model.Users) *User {
 	return &User{
-		Id:        user.Id,
+		StrNum:    user.STRNum,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 		Name:      user.Name,

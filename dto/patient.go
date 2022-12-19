@@ -45,7 +45,7 @@ func PatientCardsDTO(p *model.Patients) *PatientCards {
 	}
 }
 
-func PatientDTO(p *model.Patients, g *model.Guardians) *Patients {
+func PatientDTO(p *model.Patients) *Patients {
 	return &Patients{
 		Id:            p.Id,
 		Name:          p.Name,
@@ -59,9 +59,9 @@ func PatientDTO(p *model.Patients, g *model.Guardians) *Patients {
 		Address:       strings.Join([]string{p.Address, p.District}, ", "),
 		City:          p.City,
 		Province:      p.Province,
-		FamilyName:    g.Name,
-		Relationship:  g.Relationship,
-		FamilyContact: g.PhoneNum,
+		FamilyName:    p.NameFamily,
+		Relationship:  p.RelationshipFamily,
+		FamilyContact: p.PhoneNumFamily,
 		Status:        p.Status,
 	}
 }
