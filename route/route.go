@@ -36,7 +36,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	dayRepo := shiftrepo.NewDayRepository(db)
 
 	adminUC := adminuc.NewAdminUsecase(adminRepo)
-	userUC := useruc.NewUserUsecase(userRepo)
+	userUC := useruc.NewUserUsecase(userRepo, doctorRepo, nurseRepo)
 	patientUC := patientuc.NewPatientUsecase(patientRepo, guardianRepo)
 	guardianUC := patientuc.NewGuardianUSecase(guardianRepo)
 	doctorUC := profileuc.NewDoctorUsecase(doctorRepo)

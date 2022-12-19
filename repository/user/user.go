@@ -24,8 +24,8 @@ func NewUserRepository(db *sql.DB) *userRepository {
 }
 
 func (u *userRepository) Create(user model.Users) error {
-	query := `INSERT INTO users(id, created_at, updated_at, username, password, email, role, str_num) VALUES (?,?,?,?,?,?,?,?)`
-	_, err := u.db.Exec(query, user.Id, user.CreatedAt, user.UpdatedAt, user.Username, user.Password, user.Email,
+	query := `INSERT INTO users(id, created_at, updated_at, name, password, email, role, str_num) VALUES (?,?,?,?,?,?,?,?)`
+	_, err := u.db.Exec(query, user.Id, user.CreatedAt, user.UpdatedAt, user.Name, user.Password, user.Email,
 		user.Role, user.STRNum)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (u *userRepository) Create(user model.Users) error {
 }
 
 func (u *userRepository) Login(email string) (model.Users, error) {
-	query := `SELECT id, created_at, updated_at, username, password, email, role, str_num FROM users WHERE email = ?`
+	query := `SELECT id, created_at, updated_at, name, password, email, role, str_num FROM users WHERE email = ?`
 	row, err := u.db.Query(query, email)
 	if err != nil {
 		return model.Users{}, err
@@ -44,7 +44,7 @@ func (u *userRepository) Login(email string) (model.Users, error) {
 	var user model.Users
 	defer row.Close()
 	row.Next()
-	err = row.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt, &user.Username, &user.Password, &user.Email,
+	err = row.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt, &user.Name, &user.Password, &user.Email,
 		&user.Role, &user.STRNum)
 	if err != nil {
 		return model.Users{}, err
@@ -54,7 +54,7 @@ func (u *userRepository) Login(email string) (model.Users, error) {
 }
 
 func (u *userRepository) GetAll() ([]dto.User, error) {
-	query := `SELECT id, created_at, updated_at, username, email, role FROM users WHERE role = 1 OR role = 2`
+	query := `SELECT str_num, created_at, updated_at, name, email, role FROM users WHERE role = 1 OR role = 2`
 	row, err := u.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (u *userRepository) GetAll() ([]dto.User, error) {
 	defer row.Close()
 	for row.Next() {
 		var user dto.User
-		err = row.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt, &user.Username, &user.Email, &user.Role)
+		err = row.Scan(&user.StrNum, &user.CreatedAt, &user.UpdatedAt, &user.Name, &user.Email, &user.Role)
 		if err != nil {
 			return nil, err
 		}
@@ -75,7 +75,7 @@ func (u *userRepository) GetAll() ([]dto.User, error) {
 }
 
 func (u *userRepository) GetById(id string) (dto.User, error) {
-	query := `SELECT id, created_at, updated_at, username, email, role FROM users WHERE id = ? AND (role = 1 OR role = 2)`
+	query := `SELECT str_num, created_at, updated_at, name, email, role FROM users WHERE str_num = ? AND (role = 1 OR role = 2)`
 	row, err := u.db.Query(query, id)
 	if err != nil {
 		return dto.User{}, err
@@ -84,7 +84,7 @@ func (u *userRepository) GetById(id string) (dto.User, error) {
 	var user dto.User
 	defer row.Close()
 	row.Next()
-	err = row.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt, &user.Username, &user.Email, &user.Role)
+	err = row.Scan(&user.StrNum, &user.CreatedAt, &user.UpdatedAt, &user.Name, &user.Email, &user.Role)
 	if err != nil {
 		return dto.User{}, err
 	}
@@ -93,8 +93,8 @@ func (u *userRepository) GetById(id string) (dto.User, error) {
 }
 
 func (u *userRepository) Update(user model.Users) error {
-	query := `UPDATE users SET updated_at = ?, username = ?, email = ? WHERE id = ?`
-	_, err := u.db.Exec(query, user.UpdatedAt, user.Username, user.Email, user.Id)
+	query := `UPDATE users SET updated_at = ?, name = ?, email = ? WHERE str_num = ?`
+	_, err := u.db.Exec(query, user.UpdatedAt, user.Name, user.Email, user.STRNum)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (u *userRepository) Update(user model.Users) error {
 }
 
 func (u *userRepository) Delete(id string) error {
-	query := `DELETE FROM users WHERE id = ?`
+	query := `DELETE FROM users WHERE str_num = ?`
 	_, err := u.db.Exec(query, id)
 	if err != nil {
 		return err

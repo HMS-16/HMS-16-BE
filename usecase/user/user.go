@@ -3,7 +3,9 @@ package user
 import (
 	"HMS-16-BE/dto"
 	"HMS-16-BE/model"
+	"HMS-16-BE/repository/profile"
 	"HMS-16-BE/repository/user"
+	"errors"
 )
 
 type UserUsecase interface {
@@ -16,14 +18,35 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
-	user user.UserRepository
+	user   user.UserRepository
+	doctor profile.DoctorRepository
+	nurse  profile.NurseRepository
 }
 
-func NewUserUsecase(u user.UserRepository) *userUsecase {
-	return &userUsecase{u}
+func NewUserUsecase(u user.UserRepository, d profile.DoctorRepository, n profile.NurseRepository) *userUsecase {
+	return &userUsecase{u, d, n}
 }
 
 func (u *userUsecase) Create(user model.Users) error {
+	if user.Role == 1 {
+		user, err := u.doctor.GetById(user.STRNum)
+		if err != nil {
+			return err
+		}
+		if user == (model.Doctors{}) {
+			err = errors.New("error: str number not registered")
+			return err
+		}
+	} else if user.Role == 2 {
+		user, err := u.nurse.GetById(user.STRNum)
+		if err != nil {
+			return err
+		}
+		if user == (model.Nurses{}) {
+			err = errors.New("error: str number not registered")
+			return err
+		}
+	}
 	return u.user.Create(user)
 }
 
