@@ -13,7 +13,6 @@ type NurseCards struct {
 }
 
 type Nurse struct {
-	UserId         string `json:"user_id"`
 	StrNum         string `json:"str_num" validate:"required"`
 	Name           string `json:"name" validate:"required"`
 	Competency     string `json:"competency" validate:"required"`
@@ -35,7 +34,6 @@ type Nurse struct {
 
 func NurseDTO(d *model.Nurses) *Nurse {
 	return &Nurse{
-		UserId:         d.UserId,
 		StrNum:         d.StrNum,
 		Name:           d.Name,
 		POB:            d.POB,

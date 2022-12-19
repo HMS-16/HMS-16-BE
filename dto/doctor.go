@@ -30,12 +30,10 @@ type Doctor struct {
 	City           string `json:"city" validate:"required"`
 	Province       string `json:"province" validate:"required"`
 	UrlImage       string `json:"url_image"`
-	UserId         string `json:"user_id"`
 }
 
 func DoctorDTO(d *model.Doctors) *Doctor {
 	return &Doctor{
-		UserId:         d.UserId,
 		StrNum:         d.StrNum,
 		Name:           d.Name,
 		POB:            d.POB,

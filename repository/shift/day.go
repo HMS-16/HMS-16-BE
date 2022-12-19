@@ -42,7 +42,7 @@ func (d *dayRepository) GetAll() ([]model.Days, error) {
 }
 
 func (d *dayRepository) GetById(id uint) (model.Days, error) {
-	query := `SELECT * FROM Days WHERE id = ?`
+	query := `SELECT * FROM days WHERE id = ?`
 	row, err := d.db.Query(query, id)
 	if err != nil {
 		return model.Days{}, err
@@ -60,7 +60,7 @@ func (d *dayRepository) GetById(id uint) (model.Days, error) {
 }
 
 func (d *dayRepository) Create(Day model.Days) error {
-	query := `INSERT INTO Days VALUES (?,?,?,?,?)`
+	query := `INSERT INTO days VALUES (?,?,?,?,?)`
 	_, err := d.db.Exec(query, Day.ID, Day.CreatedAt, Day.UpdatedAt, Day.DeletedAt, Day.Day)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (d *dayRepository) Create(Day model.Days) error {
 }
 
 func (d *dayRepository) Update(Day model.Days) error {
-	query := `UPDATE Days SET updated_at = ?, day = ? WHERE id = ?`
+	query := `UPDATE days SET updated_at = ?, day = ? WHERE id = ?`
 	_, err := d.db.Exec(query, Day.UpdatedAt, Day.Day, Day.ID)
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func (d *dayRepository) Update(Day model.Days) error {
 }
 
 func (d *dayRepository) Delete(id uint) error {
-	query := `DELETE FROM Days WHERE id = ?`
+	query := `DELETE FROM days WHERE id = ?`
 	_, err := d.db.Exec(query, id)
 	if err != nil {
 		return err
