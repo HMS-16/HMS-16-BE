@@ -2,8 +2,6 @@ package dto
 
 import (
 	"HMS-16-BE/model"
-	"strconv"
-	"strings"
 )
 
 type DoctorCards struct {
@@ -24,7 +22,7 @@ type Doctor struct {
 	Email          string `json:"email"`
 	LastEducation  string `json:"last_education" validate:"required"`
 	GraduationYear int    `json:"graduation_year" validate:"required"`
-	ExpYear        string `json:"exp_year" validate:"required"`
+	ExpYear        int    `json:"exp_year" validate:"required"`
 	Address        string `json:"address" validate:"required"`
 	District       string `json:"district" validate:"required"`
 	City           string `json:"city" validate:"required"`
@@ -45,7 +43,7 @@ func DoctorDTO(d *model.Doctors) *Doctor {
 		Email:          d.Email,
 		LastEducation:  d.LastEducation,
 		GraduationYear: d.GraduationYear,
-		ExpYear:        strings.Join([]string{strconv.Itoa(d.ExpYear), "year"}, " "),
+		ExpYear:        d.ExpYear,
 		Address:        d.Address,
 		District:       d.District,
 		City:           d.City,

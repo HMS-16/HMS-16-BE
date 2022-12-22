@@ -7,6 +7,7 @@ import (
 
 type ScheduleRepository interface {
 	Create(schedule model.Schedules) error
+	GetAll() ([]model.Schedules, error)
 	GetAllByDay(date string) ([]model.Schedules, error)
 	GetAllByPatient(patientId string) ([]model.Schedules, error)
 	GetAllByDoctor(doctorId string) ([]model.Schedules, error)
@@ -35,6 +36,27 @@ func (s *scheduleRepository) Create(schedule model.Schedules) error {
 		return err
 	}
 	return nil
+}
+
+func (s *scheduleRepository) GetAll() ([]model.Schedules, error) {
+	query := `SELECT * FROM schedules`
+	row, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var schedules []model.Schedules
+	defer row.Close()
+	for row.Next() {
+		var schedule model.Schedules
+		err = row.Scan(&schedule.ID, &schedule.CreatedAt, &schedule.UpdatedAt, &schedule.DeletedAt,
+			&schedule.PatientId, &schedule.DoctorId, &schedule.NurseId, &schedule.Date,
+			&schedule.TimeId, &schedule.Status)
+		if err != nil {
+			return nil, err
+		}
+		schedules = append(schedules, schedule)
+	}
+	return schedules, nil
 }
 
 func (s *scheduleRepository) GetAllByDay(date string) ([]model.Schedules, error) {

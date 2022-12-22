@@ -11,6 +11,7 @@ import (
 type ConditionUsecase interface {
 	Create(condition model.Conditions, patientId string) error
 	GetById(id uint) (dto.Condition, error)
+	GetAllByPatient(patientId string) ([]dto.Condition, error)
 }
 
 type conditionUsecase struct {
@@ -56,4 +57,24 @@ func (c *conditionUsecase) GetById(id uint) (dto.Condition, error) {
 		return dto.Condition{}, err
 	}
 	return *dto.ConditionDTO(&condition, &schedule, &user), nil
+}
+
+func (c *conditionUsecase) GetAllByPatient(patientId string) ([]dto.Condition, error) {
+	conditions, err := c.condition.GetAllByPatient(patientId)
+	if err != nil {
+		return nil, err
+	}
+	var conditionsDTO []dto.Condition
+	for _, condition := range conditions {
+		schedule, err := c.schedule.GetById(condition.ScheduleId)
+		if err != nil {
+			return nil, err
+		}
+		user, err := c.user.GetById(condition.NurseId)
+		if err != nil {
+			return nil, err
+		}
+		conditionsDTO = append(conditionsDTO, *dto.ConditionDTO(&condition, &schedule, &user))
+	}
+	return conditionsDTO, nil
 }

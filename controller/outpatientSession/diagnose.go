@@ -52,3 +52,18 @@ func (d *diagnoseController) GetById(c echo.Context) error {
 		"data":    diagnose,
 	})
 }
+
+func (d *diagnoseController) GetAllByPatient(c echo.Context) error {
+	id := c.Param("id")
+
+	diagnose, err := d.diagnose.GetAllByPatient(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":    "success",
+		"patient_id": id,
+		"data":       diagnose,
+	})
+}

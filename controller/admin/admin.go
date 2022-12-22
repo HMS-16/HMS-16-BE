@@ -54,7 +54,9 @@ func (a *adminController) Login(c echo.Context) error {
 	}
 
 	if !hash.CheckPasswordHash(admin.Password, adminDB.Password) {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": "password incorrect",
+		})
 	}
 
 	role := "admin"

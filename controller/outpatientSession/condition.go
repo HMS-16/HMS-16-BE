@@ -52,3 +52,18 @@ func (d *conditionController) GetById(c echo.Context) error {
 		"data":    condition,
 	})
 }
+
+func (d *conditionController) GetAllByPatient(c echo.Context) error {
+	id := c.Param("id")
+
+	conditions, err := d.condition.GetAllByPatient(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":    "success",
+		"patient_id": id,
+		"data":       conditions,
+	})
+}
