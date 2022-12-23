@@ -5,10 +5,11 @@ import (
 	"HMS-16-BE/usecase/patient"
 	"HMS-16-BE/util/middleware"
 	"HMS-16-BE/util/uuid"
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type patientController struct {
@@ -22,7 +23,9 @@ func NewPatientController(p patient.PatientUsecase) *patientController {
 func (p *patientController) GetAll(c echo.Context) error {
 	patients, err := p.patient.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -34,7 +37,9 @@ func (p *patientController) GetAll(c echo.Context) error {
 func (p *patientController) GetAllCards(c echo.Context) error {
 	patients, err := p.patient.GetAllCards()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -48,7 +53,9 @@ func (p *patientController) GetById(c echo.Context) error {
 
 	patient, err := p.patient.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -68,12 +75,16 @@ func (p *patientController) Create(c echo.Context) error {
 	validate := validator.New()
 	err := validate.Struct(&patient)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	err = p.patient.Create(patient)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -91,12 +102,16 @@ func (p *patientController) Update(c echo.Context) error {
 	validate := validator.New()
 	err := validate.Struct(&patient)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	err = p.patient.Update(patient)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -109,7 +124,9 @@ func (p *patientController) UpdateEndCase(c echo.Context) error {
 
 	err := p.patient.UpdateEndCase(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
@@ -121,7 +138,9 @@ func (p *patientController) Delete(c echo.Context) error {
 
 	err := p.patient.Delete(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",

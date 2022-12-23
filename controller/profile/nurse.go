@@ -3,10 +3,11 @@ package profile
 import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/profile"
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type nurseController struct {
@@ -20,7 +21,9 @@ func NewNurseController(n profile.NurseUsecase) *nurseController {
 func (n *nurseController) GetAll(c echo.Context) error {
 	nurses, err := n.nurse.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -32,7 +35,9 @@ func (n *nurseController) GetAll(c echo.Context) error {
 func (n *nurseController) GetAllCards(c echo.Context) error {
 	nurses, err := n.nurse.GetAllCards()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -46,7 +51,9 @@ func (n *nurseController) GetById(c echo.Context) error {
 
 	nurse, err := n.nurse.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -64,12 +71,16 @@ func (n *nurseController) Create(c echo.Context) error {
 	validate := validator.New()
 	err := validate.Struct(&nurse)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	err = n.nurse.Create(nurse)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -86,12 +97,16 @@ func (n *nurseController) Update(c echo.Context) error {
 	validate := validator.New()
 	err := validate.Struct(nurse)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	err = n.nurse.Update(nurse)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -104,7 +119,9 @@ func (n *nurseController) Delete(c echo.Context) error {
 
 	err := n.nurse.Delete(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success",
