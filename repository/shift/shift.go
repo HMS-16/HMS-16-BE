@@ -24,7 +24,7 @@ func NewShiftRepository(db *sql.DB) *shiftRepository {
 }
 
 func (s *shiftRepository) GetAllUserId() ([]string, error) {
-	query := `SELECT DISTINCT user_id FROM shifts ORDER BY day_id ASC`
+	query := `SELECT DISTINCT user_id FROM shifts`
 	row, err := s.db.Query(query)
 	if err != nil {
 		return nil, err

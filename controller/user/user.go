@@ -62,8 +62,8 @@ func (u *userController) Login(c echo.Context) error {
 	}
 
 	if !hash.CheckPasswordHash(userInput.Password, user.Password) {
-		return c.JSON(http.StatusForbidden, echo.Map{
-			"message": err.Error(),
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": "password incorrect",
 		})
 	}
 
@@ -115,6 +115,27 @@ func (u *userController) Update(c echo.Context) error {
 	user.STRNum = id
 
 	err := u.user.Update(user)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+	})
+}
+
+func (u *userController) UpdatePassword(c echo.Context) error {
+	var user model.Users
+	c.Bind(&user)
+	user.UpdatedAt = time.Now()
+
+	id := c.Param("id")
+	user.STRNum = id
+	user.Password, _ = hash.HashPassword(user.Password)
+
+	err := u.user.UpdatePassword(user)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": err.Error(),

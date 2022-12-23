@@ -14,10 +14,12 @@ import (
 
 type ScheduleUsecase interface {
 	Create(schedule model.Schedules) error
+	GetAll() ([]dto.SchedulePatientInUser, error)
 	GetAllCardByDay(date string) ([]dto.SchedulePatientCards, error) //website
 	GetAllByDay(date string) ([]dto.SchedulePatientInUser, error)    //mobile
 	//GetAllByDoctor(doctorId string) ([]model.Schedules, error)
 	GetByScheduleId(id uint) (model.Schedules, error)
+	GetAllByPatient(patientId string) ([]dto.SchedulePatientInUser, error)
 	GetDetailByPatient(patientId string) (dto.PatientDetail, error)
 	Update(schedule model.Schedules) error
 	UpdateDoctor(schedule model.Schedules) error
@@ -78,6 +80,24 @@ func (s *scheduleUsecase) Create(schedule model.Schedules) error {
 
 }
 
+func (s *scheduleUsecase) GetAll() ([]dto.SchedulePatientInUser, error) {
+	schedules, err := s.schedule.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	var schedulesDTO []dto.SchedulePatientInUser
+	for _, schedule := range schedules {
+		patient, err := s.patient.GetById(schedule.PatientId)
+		doctor, err := s.user.GetById(schedule.DoctorId)
+		nurse, err := s.user.GetById(schedule.NurseId)
+		if err != nil {
+			return nil, err
+		}
+		schedulesDTO = append(schedulesDTO, *dto.SchedulePatientInUserDTO(&schedule, &patient, &doctor, &nurse))
+	}
+	return schedulesDTO, err
+}
+
 func (s *scheduleUsecase) GetAllCardByDay(date string) ([]dto.SchedulePatientCards, error) {
 	schedules, err := s.schedule.GetAllByDay(date)
 	if err != nil {
@@ -119,6 +139,24 @@ func (s *scheduleUsecase) GetByScheduleId(id uint) (model.Schedules, error) {
 		return model.Schedules{}, err
 	}
 	return schedule, nil
+}
+
+func (s *scheduleUsecase) GetAllByPatient(patientId string) ([]dto.SchedulePatientInUser, error) {
+	schedules, err := s.schedule.GetAllByPatient(patientId)
+	if err != nil {
+		return nil, err
+	}
+	var schedulesDTO []dto.SchedulePatientInUser
+	for _, schedule := range schedules {
+		patient, err := s.patient.GetById(schedule.PatientId)
+		doctor, err := s.user.GetById(schedule.DoctorId)
+		nurse, err := s.user.GetById(schedule.NurseId)
+		if err != nil {
+			return nil, err
+		}
+		schedulesDTO = append(schedulesDTO, *dto.SchedulePatientInUserDTO(&schedule, &patient, &doctor, &nurse))
+	}
+	return schedulesDTO, err
 }
 
 func (s *scheduleUsecase) GetDetailByPatient(patientId string) (dto.PatientDetail, error) {
@@ -171,7 +209,7 @@ func (s *scheduleUsecase) UpdateNurse(schedule model.Schedules) error {
 }
 
 func (s *scheduleUsecase) UpdateStatus(id uint) error {
-	return s.schedule.Delete(id)
+	return s.schedule.UpdateStatus(id)
 }
 
 func (s *scheduleUsecase) Delete(id uint) error {

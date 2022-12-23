@@ -11,6 +11,7 @@ import (
 type DiagnoseUsecase interface {
 	Create(diagnose model.Diagnoses, patientId string) error
 	GetById(id uint) (dto.Diagnose, error)
+	GetAllByPatient(patientId string) ([]dto.Diagnose, error)
 }
 
 type diagnoseUsecase struct {
@@ -55,4 +56,24 @@ func (d *diagnoseUsecase) GetById(id uint) (dto.Diagnose, error) {
 		return dto.Diagnose{}, err
 	}
 	return *dto.DiagnoseDTO(&diagnose, &schedule, &user), nil
+}
+
+func (d *diagnoseUsecase) GetAllByPatient(patientId string) ([]dto.Diagnose, error) {
+	diagnoses, err := d.diagnose.GetAllByPatient(patientId)
+	if err != nil {
+		return nil, err
+	}
+	var diagnosesDTO []dto.Diagnose
+	for _, diagnose := range diagnoses {
+		schedule, err := d.schedule.GetById(diagnose.ScheduleId)
+		if err != nil {
+			return nil, err
+		}
+		user, err := d.user.GetById(diagnose.DoctorId)
+		if err != nil {
+			return nil, err
+		}
+		diagnosesDTO = append(diagnosesDTO, *dto.DiagnoseDTO(&diagnose, &schedule, &user))
+	}
+	return diagnosesDTO, nil
 }

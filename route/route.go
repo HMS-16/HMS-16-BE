@@ -105,6 +105,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	userV1JWT.GET("/accounts", userCtrl.GetAll)
 	userV1JWT.GET("/accounts/:id", userCtrl.GetById)
 	userV1JWT.PUT("/accounts/:id", userCtrl.Update)
+	userV1JWT.PUT("/accounts/password/:id", userCtrl.UpdatePassword)
 	userV1JWT.DELETE("/accounts/:id", userCtrl.Delete)
 
 	patients := e.Group("/v1/patients")
@@ -186,10 +187,12 @@ func Init(e *echo.Echo, db *sql.DB) {
 	appointmentAdmin := appointment.Group("")
 	appointmentAdmin.Use(middleware.AuthorizationAdmin)
 	appointmentAdmin.POST("", scheduleCtrl.Create)
+	appointment.GET("", scheduleCtrl.GetAll)
 	appointment.GET("/all", scheduleCtrl.GetAllByDay)
 	appointment.GET("/all/cards", scheduleCtrl.GetAllCardByDay)
 	appointment.GET("/:id", scheduleCtrl.GetByScheduleId)
-	appointment.GET("/patient/:id", scheduleCtrl.GetDetailByPatient)
+	appointment.GET("/patient/:id", scheduleCtrl.GetAllByPatient)
+	appointment.GET("/patient/detail/:id", scheduleCtrl.GetDetailByPatient)
 	appointment.PUT("/change/doctor/:id", scheduleCtrl.UpdateDoctor)
 	appointment.PUT("/change/nurse/:id", scheduleCtrl.UpdateNurse)
 	appointment.PUT("/change/status/:id", scheduleCtrl.UpdateStatus)
@@ -204,6 +207,7 @@ func Init(e *echo.Echo, db *sql.DB) {
 	condition.Use(middleware.AuthorizationNurse)
 	condition.POST("/:id", conditionCtrl.Create) //patientid
 	condition.GET("/:id", conditionCtrl.GetById)
+	condition.GET("/patients/:id", conditionCtrl.GetAllByPatient)
 
 	diagnose := e.Group("/v1/diagnoses")
 	diagnose.Use(mid.JWTWithConfig(mid.JWTConfig{
@@ -213,4 +217,5 @@ func Init(e *echo.Echo, db *sql.DB) {
 	diagnose.Use(middleware.AuthorizationDoctor)
 	diagnose.POST("/:id", diagnoseCtrl.Create) //patientid
 	diagnose.GET("/:id", diagnoseCtrl.GetById)
+	diagnose.GET("/patients/:id", diagnoseCtrl.GetAllByPatient)
 }

@@ -31,8 +31,7 @@ func (d *diagnoseRepository) Create(diagnose model.Diagnoses) error {
 }
 
 func (d *diagnoseRepository) GetAllByPatient(patientId string) ([]model.Diagnoses, error) {
-	query := `SELECT d.* FROM diagnoses cdINNER JOIN schedules s ON s.id == d.schedule_id
-           INNER JOIN patients p ON p.id == s.patient_id WHERE p.id = ?`
+	query := `SELECT d.* FROM diagnoses d INNER JOIN schedules s ON s.id = d.schedule_id INNER JOIN patients p ON p.id = s.patient_id WHERE p.id = ?`
 	row, err := d.db.Query(query, patientId)
 	if err != nil {
 		return nil, err

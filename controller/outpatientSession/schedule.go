@@ -3,6 +3,7 @@ package outpatientSession
 import (
 	"HMS-16-BE/model"
 	"HMS-16-BE/usecase/outpatientSession"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -33,10 +34,22 @@ func (s *scheduleController) Create(c echo.Context) error {
 	})
 }
 
+func (s *scheduleController) GetAll(c echo.Context) error {
+	schedules, err := s.schedule.GetAll()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    schedules,
+	})
+}
+
 func (s *scheduleController) GetAllCardByDay(c echo.Context) error {
 	date := c.QueryParam("date")
 	if date == "" {
-		date = time.Now().Format("01/02/2006")
+		date = time.Now().Add(7 * time.Hour).Format("01/02/2006")
 	}
 
 	schedules, err := s.schedule.GetAllCardByDay(date)
@@ -84,6 +97,20 @@ func (s *scheduleController) GetByScheduleId(c echo.Context) error {
 	})
 }
 
+func (s *scheduleController) GetAllByPatient(c echo.Context) error {
+	id := c.Param("id")
+
+	schedules, err := s.schedule.GetAllByPatient(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    schedules,
+	})
+}
+
 func (s *scheduleController) GetDetailByPatient(c echo.Context) error {
 	id := c.Param("id")
 
@@ -127,6 +154,7 @@ func (s *scheduleController) UpdateDoctor(c echo.Context) error {
 	c.Bind(&schedule)
 	schedule.ID = uint(id)
 	schedule.UpdatedAt = time.Now()
+	fmt.Println(schedule)
 
 	err = s.schedule.UpdateDoctor(schedule)
 	if err != nil {

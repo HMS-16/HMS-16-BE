@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetAll() ([]dto.User, error)
 	GetById(id string) (dto.User, error)
 	Update(user model.Users) error
+	UpdatePassword(user model.Users) error
 	Delete(id string) error
 }
 
@@ -95,6 +96,16 @@ func (u *userRepository) GetById(id string) (dto.User, error) {
 func (u *userRepository) Update(user model.Users) error {
 	query := `UPDATE users SET updated_at = ?, name = ?, email = ? WHERE str_num = ?`
 	_, err := u.db.Exec(query, user.UpdatedAt, user.Name, user.Email, user.STRNum)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *userRepository) UpdatePassword(user model.Users) error {
+	query := `UPDATE users SET updated_at = ?, password = ? WHERE str_num = ?`
+	_, err := u.db.Exec(query, user.UpdatedAt, user.Password, user.STRNum)
 	if err != nil {
 		return err
 	}

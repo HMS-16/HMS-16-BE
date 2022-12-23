@@ -14,6 +14,7 @@ type UserUsecase interface {
 	GetAll() ([]dto.User, error)
 	GetById(id string) (dto.User, error)
 	Update(user model.Users) error
+	UpdatePassword(user model.Users) error
 	Delete(id string) error
 }
 
@@ -51,7 +52,11 @@ func (u *userUsecase) Create(user model.Users) error {
 }
 
 func (u *userUsecase) Login(email string) (model.Users, error) {
-	return u.user.Login(email)
+	user, err := u.user.Login(email)
+	if err != nil {
+		return model.Users{}, err
+	}
+	return user, nil
 }
 
 func (u *userUsecase) GetAll() ([]dto.User, error) {
@@ -64,6 +69,10 @@ func (u *userUsecase) GetById(id string) (dto.User, error) {
 
 func (u *userUsecase) Update(user model.Users) error {
 	return u.user.Update(user)
+}
+
+func (u *userUsecase) UpdatePassword(user model.Users) error {
+	return u.user.UpdatePassword(user)
 }
 
 func (u *userUsecase) Delete(id string) error {

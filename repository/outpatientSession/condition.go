@@ -33,8 +33,7 @@ func (c *conditionRepository) Create(condition model.Conditions) error {
 }
 
 func (c *conditionRepository) GetAllByPatient(patientId string) ([]model.Conditions, error) {
-	query := `SELECT c.* FROM conditions c INNER JOIN schedules s ON s.id == c.schedule_id
-           INNER JOIN patients p ON p.id == s.patient_id WHERE p.id = ?`
+	query := `SELECT c.* FROM conditions c INNER JOIN schedules s ON s.id = c.schedule_id INNER JOIN patients p ON p.id = s.patient_id WHERE p.id = ?`
 	row, err := c.db.Query(query, patientId)
 	if err != nil {
 		return nil, err
