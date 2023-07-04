@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type dayController struct {
@@ -46,6 +47,8 @@ func (t *dayController) GetById(c echo.Context) error {
 func (t *dayController) Create(c echo.Context) error {
 	var day model.Days
 	c.Bind(&day)
+	day.CreatedAt = time.Now()
+	day.UpdatedAt = day.CreatedAt
 
 	validate := validator.New()
 	err := validate.Struct(&day)
@@ -68,6 +71,7 @@ func (t *dayController) Update(c echo.Context) error {
 	var day model.Days
 	c.Bind(&day)
 	day.ID = uint(id)
+	day.UpdatedAt = time.Now()
 
 	err := t.day.Update(day)
 	if err != nil {

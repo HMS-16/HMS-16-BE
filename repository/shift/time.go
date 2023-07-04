@@ -70,8 +70,8 @@ func (t *timeRepository) Create(time model.Times) error {
 }
 
 func (t *timeRepository) Update(time model.Times) error {
-	query := `UPDATE times SET start = ?, end = ? WHERE id = ?`
-	_, err := t.db.Exec(query, time.Start, time.End, time.ID)
+	query := `UPDATE times SET updated_at = ?, start = ?, end = ? WHERE id = ?`
+	_, err := t.db.Exec(query, time.UpdatedAt, time.Start, time.End, time.ID)
 	if err != nil {
 		return err
 	}

@@ -9,6 +9,7 @@ type ShiftRepository interface {
 	GetAllUserId() ([]string, error)
 	GetAllByUserId(id string) ([]model.Shifts, error)
 	GetById(id string) (model.Shifts, error)
+	GetIdByShift(date, time uint) ([]string, error)
 	Create(shift model.Shifts) error
 	Update(shift model.Shifts) error
 	Delete(id string) error
@@ -23,7 +24,7 @@ func NewShiftRepository(db *sql.DB) *shiftRepository {
 }
 
 func (s *shiftRepository) GetAllUserId() ([]string, error) {
-	query := `SELECT DISTINCT user_id FROM shifts ORDER BY day_id ASC`
+	query := `SELECT DISTINCT user_id FROM shifts`
 	row, err := s.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -82,6 +83,25 @@ func (s *shiftRepository) GetById(id string) (model.Shifts, error) {
 	return shift, nil
 }
 
+func (s *shiftRepository) GetIdByShift(date, time uint) ([]string, error) {
+	query := `SELECT user_id FROM shifts WHERE day_id = ? AND time_id = ?`
+	row, err := s.db.Query(query, date, time)
+	if err != nil {
+		return nil, err
+	}
+	var users []string
+	defer row.Close()
+	for row.Next() {
+		var user string
+		err = row.Scan(&user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
 func (s *shiftRepository) Create(shift model.Shifts) error {
 	query := `INSERT INTO shifts VALUES (?,?,?,?,?,?,?)`
 	_, err := s.db.Exec(query, shift.ID, shift.CreatedAt, shift.UpdatedAt, shift.DeletedAt, shift.UserId,
@@ -94,8 +114,8 @@ func (s *shiftRepository) Create(shift model.Shifts) error {
 }
 
 func (s *shiftRepository) Update(shift model.Shifts) error {
-	query := `UPDATE shifts SET user_id = ?, day_id = ?, time_id = ? WHERE id = ?`
-	_, err := s.db.Exec(query, shift.UserId, shift.DayId, shift.TimeId, shift.ID)
+	query := `UPDATE shifts SET updated = ?, user_id = ?, day_id = ?, time_id = ? WHERE id = ?`
+	_, err := s.db.Exec(query, shift.UpdatedAt, shift.UserId, shift.DayId, shift.TimeId, shift.ID)
 	if err != nil {
 		return err
 	}

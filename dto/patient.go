@@ -12,7 +12,7 @@ type PatientCards struct {
 	Name   string `json:"name"`
 	Age    int    `json:"age"`
 	Gender string `json:"gender"`
-	Status bool   `json:"status"`
+	Status string `json:"status"`
 }
 
 type Patients struct {
@@ -36,16 +36,16 @@ type Patients struct {
 
 func PatientCardsDTO(p *model.Patients) *PatientCards {
 	return &PatientCards{
-		Date:   p.CreatedAt.String(),
+		Date:   p.CreatedAt.Format("02/01/2006"),
 		Id:     p.Id,
 		Name:   p.Name,
 		Age:    GetAge(p),
 		Gender: p.Gender,
-		Status: p.Status,
+		Status: StatusSchedule(p.Status),
 	}
 }
 
-func PatientDTO(p *model.Patients, g *model.Guardians) *Patients {
+func PatientDTO(p *model.Patients) *Patients {
 	return &Patients{
 		Id:            p.Id,
 		Name:          p.Name,
@@ -59,9 +59,9 @@ func PatientDTO(p *model.Patients, g *model.Guardians) *Patients {
 		Address:       strings.Join([]string{p.Address, p.District}, ", "),
 		City:          p.City,
 		Province:      p.Province,
-		FamilyName:    g.Name,
-		Relationship:  g.Relationship,
-		FamilyContact: g.PhoneNum,
+		FamilyName:    p.NameFamily,
+		Relationship:  p.RelationshipFamily,
+		FamilyContact: p.PhoneNumFamily,
 		Status:        p.Status,
 	}
 }

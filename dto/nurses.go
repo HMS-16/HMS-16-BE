@@ -2,8 +2,6 @@ package dto
 
 import (
 	"HMS-16-BE/model"
-	"strconv"
-	"strings"
 )
 
 type NurseCards struct {
@@ -13,7 +11,6 @@ type NurseCards struct {
 }
 
 type Nurse struct {
-	UserId         string `json:"user_id"`
 	StrNum         string `json:"str_num" validate:"required"`
 	Name           string `json:"name" validate:"required"`
 	Competency     string `json:"competency" validate:"required"`
@@ -25,14 +22,16 @@ type Nurse struct {
 	Email          string `json:"email"`
 	LastEducation  string `json:"last_education" validate:"required"`
 	GraduationYear int    `json:"graduation_year" validate:"required"`
-	ExpYear        string `json:"exp_year" validate:"required"`
+	ExpYear        int    `json:"exp_year" validate:"required"`
+	District       string `json:"district" validate:"required"`
+	City           string `json:"city" validate:"required"`
+	Province       string `json:"province" validate:"required"`
 	Address        string `json:"address" validate:"required"`
 	UrlImage       string `json:"url_image"`
 }
 
 func NurseDTO(d *model.Nurses) *Nurse {
 	return &Nurse{
-		UserId:         d.UserId,
 		StrNum:         d.StrNum,
 		Name:           d.Name,
 		POB:            d.POB,
@@ -44,8 +43,11 @@ func NurseDTO(d *model.Nurses) *Nurse {
 		Email:          d.Email,
 		LastEducation:  d.LastEducation,
 		GraduationYear: d.GraduationYear,
-		ExpYear:        strings.Join([]string{strconv.Itoa(d.ExpYear), "year"}, " "),
-		Address:        strings.Join([]string{d.Address, d.District, d.City, d.Province}, ", "),
+		ExpYear:        d.ExpYear,
+		Address:        d.Address,
+		District:       d.District,
+		City:           d.City,
+		Province:       d.Province,
 		UrlImage:       d.UrlImage,
 	}
 }
